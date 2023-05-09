@@ -58,7 +58,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-scalars:2.9.0"
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     // okhttp
-    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+    implementation "com.squareup.okhttp3:okhttp:4.9.3"
     testImplementation 'junit:junit:4.13.2'
     // rxjava2
     implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
@@ -72,5 +72,7 @@ dependencies {
     releaseImplementation 'com.facebook.flipper:flipper-noop:0.190.0'
     // flipper network plugin
     debugImplementation 'com.facebook.flipper:flipper-network-plugin:0.190.0'
-
+    // navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.3"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
 }
