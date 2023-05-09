@@ -1,5 +1,7 @@
 package com.demo.ubike.ui.main
 
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
+import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,8 +28,10 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder().build()
+    fun provideOkHttpClient(networkFlipperPlugin: NetworkFlipperPlugin): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addNetworkInterceptor(FlipperOkhttpInterceptor(networkFlipperPlugin))
+            .build()
     }
 
     @Singleton
