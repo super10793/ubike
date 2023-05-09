@@ -21,7 +21,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://jsonplaceholder.typicode.com")
+            .baseUrl(Config.BASE_URL)
             .client(okHttpClient)
             .build()
     }
