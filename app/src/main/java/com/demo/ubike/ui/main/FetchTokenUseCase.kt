@@ -3,10 +3,10 @@ package com.demo.ubike.ui.main
 import io.reactivex.Single
 import javax.inject.Inject
 
-class FetchFakeDataUseCase @Inject constructor(
+class FetchTokenUseCase @Inject constructor(
     private val homeRepository: HomeRepository
 ) {
-    operator fun invoke(): Single<FakeData> {
-        return homeRepository.fetchFakeData()
+    operator fun invoke(): Single<TokenResponse> {
+        return homeRepository.fetchToken()
     }
 }

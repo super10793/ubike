@@ -6,7 +6,7 @@ import javax.inject.Inject
 class HomeRepositoryImpl @Inject constructor(
     private val homeApi: HomeApi
 ) : HomeRepository {
-    override fun fetchFakeData(): Single<FakeData> {
-        return homeApi.fetchFakeData()
+    override fun fetchToken(): Single<TokenResponse> {
+        return homeApi.fetchToken()
     }
 }

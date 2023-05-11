@@ -11,7 +11,7 @@ import javax.inject.Singleton
 object DataModule {
     @Singleton
     @Provides
-    fun provideFetchFakeDataUseCase(homeRepository: HomeRepository): FetchFakeDataUseCase {
-        return FetchFakeDataUseCase(homeRepository)
+    fun provideFetchTokenUseCase(homeRepository: HomeRepository): FetchTokenUseCase {
+        return FetchTokenUseCase(homeRepository)
     }
 }
