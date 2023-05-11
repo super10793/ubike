@@ -1,4 +1,4 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike
 
 object Config {
     const val BASE_URL = "https://tdx.transportdata.tw/"

@@ -1,6 +1,7 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.di
 
 import android.content.Context
+import com.demo.ubike.utils.FlipperManager
 import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping

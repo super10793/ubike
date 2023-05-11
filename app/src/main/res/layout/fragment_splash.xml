@@ -8,7 +8,7 @@
 
         <variable
             name="splashViewModel"
-            type="com.demo.ubike.ui.main.SplashViewModel" />
+            type="com.demo.ubike.data.viewmodel.SplashViewModel" />
 
     </data>
 

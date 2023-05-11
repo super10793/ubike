@@ -1,8 +1,9 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.ui.fragment
 
 import androidx.databinding.library.baseAdapters.BR
 import com.demo.ubike.R
 import com.demo.ubike.databinding.FragmentSplashBinding
+import com.demo.ubike.data.viewmodel.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

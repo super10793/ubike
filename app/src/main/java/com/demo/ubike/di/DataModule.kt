@@ -1,5 +1,7 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.di
 
+import com.demo.ubike.usecase.FetchTokenUseCase
+import com.demo.ubike.data.repository.HomeRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

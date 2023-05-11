@@ -1,5 +1,8 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.di
 
+import com.demo.ubike.data.api.HomeApi
+import com.demo.ubike.data.repository.HomeRepository
+import com.demo.ubike.data.repository.HomeRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

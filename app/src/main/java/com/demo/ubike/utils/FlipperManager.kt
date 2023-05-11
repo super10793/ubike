@@ -1,4 +1,4 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.utils
 
 import android.content.Context
 import com.demo.ubike.BuildConfig

@@ -1,7 +1,8 @@
-package com.demo.ubike
+package com.demo.ubike.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.demo.ubike.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

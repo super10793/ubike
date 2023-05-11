@@ -9,7 +9,7 @@
 
         <variable
             name="favoriteViewModel"
-            type="com.demo.ubike.ui.main.FavoriteViewModel" />
+            type="com.demo.ubike.data.viewmodel.FavoriteViewModel" />
 
     </data>
 

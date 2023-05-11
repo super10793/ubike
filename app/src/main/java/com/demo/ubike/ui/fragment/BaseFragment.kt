@@ -1,4 +1,4 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

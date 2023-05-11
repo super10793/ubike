@@ -1,4 +1,4 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.data.model
 
 data class TokenResponse(
     val access_token: String,

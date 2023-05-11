@@ -1,8 +1,9 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.ui.fragment
 
 import androidx.databinding.library.baseAdapters.BR
 import com.demo.ubike.R
 import com.demo.ubike.databinding.FragmentFavoriteBinding
+import com.demo.ubike.data.viewmodel.FavoriteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

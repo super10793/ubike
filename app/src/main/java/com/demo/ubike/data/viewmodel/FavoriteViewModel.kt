@@ -1,4 +1,4 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.data.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

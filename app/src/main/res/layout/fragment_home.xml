@@ -9,7 +9,7 @@
 
         <variable
             name="homeViewModel"
-            type="com.demo.ubike.ui.main.HomeViewModel" />
+            type="com.demo.ubike.data.viewmodel.HomeViewModel" />
 
     </data>
 

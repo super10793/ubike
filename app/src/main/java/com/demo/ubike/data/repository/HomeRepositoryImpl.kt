@@ -1,5 +1,7 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.data.repository
 
+import com.demo.ubike.data.api.HomeApi
+import com.demo.ubike.data.model.TokenResponse
 import io.reactivex.Single
 import javax.inject.Inject
 

@@ -1,5 +1,7 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.di
 
+import com.demo.ubike.Config
+import com.demo.ubike.data.api.HomeApi
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import dagger.Module

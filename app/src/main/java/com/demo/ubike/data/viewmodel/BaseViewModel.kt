@@ -1,4 +1,4 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.data.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

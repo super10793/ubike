@@ -1,5 +1,7 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.data.api
 
+import com.demo.ubike.data.model.TokenResponse
+import com.demo.ubike.Config
 import io.reactivex.Single
 import retrofit2.http.*
 

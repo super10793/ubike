@@ -1,6 +1,7 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike
 
 import android.app.Application
+import com.demo.ubike.utils.FlipperManager
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

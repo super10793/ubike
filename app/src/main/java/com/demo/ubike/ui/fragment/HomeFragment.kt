@@ -1,4 +1,4 @@
-package com.demo.ubike.ui.main
+package com.demo.ubike.ui.fragment
 
 import android.os.Bundle
 import android.view.View
@@ -8,6 +8,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.demo.ubike.BR
 import com.demo.ubike.R
 import com.demo.ubike.databinding.FragmentHomeBinding
+import com.demo.ubike.data.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
