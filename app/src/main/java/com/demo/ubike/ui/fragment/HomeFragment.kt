@@ -7,8 +7,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.demo.ubike.BR
 import com.demo.ubike.R
-import com.demo.ubike.databinding.FragmentHomeBinding
 import com.demo.ubike.data.viewmodel.HomeViewModel
+import com.demo.ubike.databinding.FragmentHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -53,6 +53,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
                 }
             }
         })
+
+        viewDataBinding.viewPager.isUserInputEnabled = false
     }
 
     private fun initNavView() {
