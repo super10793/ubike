@@ -7,14 +7,17 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.demo.ubike.data.viewmodel.MainViewModel
 
 abstract class BaseFragment<VB : ViewDataBinding, VM : ViewModel> : Fragment() {
     private var _viewDataBinding: VB? = null
     val viewDataBinding get() = _viewDataBinding!!
 
     val viewModel: VM by lazy { ViewModelProvider(this)[getViewModelClass()] }
+    protected val mainViewModel: MainViewModel by activityViewModels()
     abstract fun getViewModelClass(): Class<VM>
     abstract fun layoutId(): Int
     abstract val bindingVariable: Int
