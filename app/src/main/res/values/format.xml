@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="api_token" translatable="false">Bearer %s</string>
+    <string name="api_station_id" translatable="false">StationID eq \'%s\'</string>
+</resources>
