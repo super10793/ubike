@@ -23,7 +23,7 @@ class StationResponse : ArrayList<StationResponse.Data>() {
         @SerializedName("BikesCapacity")
         val bikesCapacity: Int,
         @SerializedName("ServiceType")
-        private val serviceType: Int,
+        val serviceType: Int,
         @SerializedName("StationPosition")
         val stationPosition: StationPosition,
         @SerializedName("StationName")

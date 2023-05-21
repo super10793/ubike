@@ -12,7 +12,7 @@ import com.demo.ubike.databinding.FragmentHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
+class HomeFragment : BasePermissionFragment<FragmentHomeBinding, HomeViewModel>() {
     override fun getViewModelClass(): Class<HomeViewModel> = HomeViewModel::class.java
 
     override fun layoutId(): Int = R.layout.fragment_home

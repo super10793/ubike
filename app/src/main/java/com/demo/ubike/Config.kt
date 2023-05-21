@@ -9,4 +9,5 @@ object Config {
     const val API_STATION_URL = "api/basic/v2/Bike/Station/City/%s"
     const val API_STATION_DETAIL_URL = "api/basic/v2/Bike/Availability/City/%s"
     const val API_HEADER_TOKEN = "Bearer %s"
+    const val DATABASE_NAME = "app-database"
 }

@@ -1,19 +1,28 @@
 package com.demo.ubike.data.repository
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import com.demo.ubike.Config
 import com.demo.ubike.data.api.HomeApi
+import com.demo.ubike.data.local.station.StationDao
+import com.demo.ubike.data.local.station.StationEntity
 import com.demo.ubike.data.model.City
 import com.demo.ubike.data.model.StationDetailResponse
 import com.demo.ubike.data.model.StationResponse
 import com.demo.ubike.data.model.TokenResponse
+import com.demo.ubike.utils.SharePreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HomeRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val sharePrefer: SharePreferenceManager,
     private val homeApi: HomeApi,
+    private val stationDao: StationDao
 ) : HomeRepository {
     override fun fetchToken(): Single<TokenResponse> {
         return homeApi.fetchToken()
@@ -23,6 +32,31 @@ class HomeRepositoryImpl @Inject constructor(
         val url = String.format(Config.API_STATION_URL, city.apiKey)
         val tokenStr = String.format(Config.API_HEADER_TOKEN, token)
         return homeApi.fetchStation(url, tokenStr)
+    }
+
+    override fun fetchStationAndInsert(token: String, city: City): Completable {
+        val url = String.format(Config.API_STATION_URL, city.apiKey)
+        val tokenStr = String.format(Config.API_HEADER_TOKEN, token)
+        return homeApi.fetchStation(url, tokenStr)
+            .flatMapCompletable {
+                val list = it.map { response ->
+                    StationEntity(
+                        stationUID = response.stationUID,
+                        stationID = response.stationID,
+                        authorityID = response.authorityID,
+                        cityName = city.apiKey,
+                        bikesCapacity = response.bikesCapacity,
+                        serviceType = response.serviceType,
+                        positionLon = response.stationPosition.positionLon,
+                        positionLat = response.stationPosition.positionLat,
+                        stationNameZhTw = response.stationName.zh_tw,
+                        stationNameEn = response.stationName.en,
+                        stationAddressZhTw = response.stationAddress.zh_tw,
+                        stationAddressEn = response.stationAddress.en
+                    )
+                }
+                stationDao.insertStation(list)
+            }
     }
 
     override fun fetchStationDetail(token: String, city: City): Single<StationDetailResponse> {
