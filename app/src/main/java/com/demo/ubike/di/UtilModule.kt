@@ -3,6 +3,7 @@ package com.demo.ubike.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.demo.ubike.utils.NetworkUtil
 import com.demo.ubike.utils.SharePreferenceManager
 import dagger.Module
 import dagger.Provides
@@ -24,5 +25,11 @@ object UtilModule {
     @Provides
     fun provideSharedPreferencesManager(sharedPreferences: SharedPreferences): SharePreferenceManager {
         return SharePreferenceManager(sharedPreferences)
+    }
+
+    @Singleton
+    @Provides
+    fun provideNetworkUtil(@ApplicationContext context: Context): NetworkUtil {
+        return NetworkUtil(context)
     }
 }
