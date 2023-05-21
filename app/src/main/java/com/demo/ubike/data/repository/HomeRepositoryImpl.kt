@@ -1,7 +1,6 @@
 package com.demo.ubike.data.repository
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import com.demo.ubike.Config
 import com.demo.ubike.data.api.HomeApi
 import com.demo.ubike.data.local.station.StationDao
@@ -15,7 +14,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HomeRepositoryImpl @Inject constructor(
@@ -63,5 +61,13 @@ class HomeRepositoryImpl @Inject constructor(
         val url = String.format(Config.API_STATION_DETAIL_URL, city.apiKey)
         val tokenStr = String.format(Config.API_HEADER_TOKEN, token)
         return homeApi.fetchStationDetail(url, tokenStr)
+    }
+
+    override fun getStationsByLocation(lat: Double, lon: Double): Observable<List<StationEntity>> {
+        val maxLat = lat + 0.02
+        val minLat = lat - 0.02
+        val maxLon = lon + 0.017
+        val minLon = lon - 0.017
+        return stationDao.getStationsByLocation(maxLat, minLat, maxLon, minLon)
     }
 }
