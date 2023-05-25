@@ -20,4 +20,7 @@ interface StationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertStation(list: List<StationEntity>): Completable
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertStationDetail(list: List<StationDetailEntity>): Completable
 }

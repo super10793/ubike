@@ -16,7 +16,17 @@ interface HomeRepository {
 
     fun fetchStationAndInsert(token: String, city: City): Completable
 
+    fun fetchAllCityStation(token: String): Completable
+
+    fun fetchAllCityStationDetail(token: String): Completable
+
     fun fetchStationDetail(token: String, city: City): Single<StationDetailResponse>
+
+    fun fetchStationDetailById(
+        token: String,
+        city: City,
+        stationUid: String
+    ): Single<StationDetailResponse>
 
     fun getStationsByLocation(lat: Double, lon: Double): Observable<List<StationEntity>>
 }

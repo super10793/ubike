@@ -11,7 +11,7 @@ class StationResponse : ArrayList<StationResponse.Data>() {
      * @property stationPosition 站點位置
      * @property stationAddress 站點地址
      * @property bikesCapacity 可容納之自行車總數
-     * @property serviceType 服務類型
+     * @property serviceType 服務類型，參考[ServiceType]
      * */
     data class Data(
         @SerializedName("StationUID")
@@ -30,18 +30,7 @@ class StationResponse : ArrayList<StationResponse.Data>() {
         val stationName: StationName,
         @SerializedName("StationAddress")
         val stationAddress: StationAddress
-    ) {
-        fun getServiceType(): ServiceType {
-            return when (serviceType) {
-                ServiceType.UBike1_0.key -> ServiceType.UBike1_0
-                ServiceType.UBike2_0.key -> ServiceType.UBike2_0
-                ServiceType.TBike.key -> ServiceType.TBike
-                ServiceType.PBike.key -> ServiceType.PBike
-                ServiceType.KBike.key -> ServiceType.KBike
-                else -> ServiceType.Unknown
-            }
-        }
-    }
+    )
 
     /**
      * @property positionLon：位置經度(WGS84)
@@ -56,23 +45,23 @@ class StationResponse : ArrayList<StationResponse.Data>() {
 
     /**
      * @property zh_tw：中文繁體名稱
-     * @property en 英文名稱
+     * @property en 英文名稱(金門不會回傳該值)
      * */
     data class StationName(
         @SerializedName("Zh_tw")
         val zh_tw: String,
         @SerializedName("En")
-        val en: String
+        val en: String? = ""
     )
 
     /**
-     * @property zh_tw：中文繁體名稱
-     * @property en 英文名稱
+     * @property zh_tw：中文繁體名稱(金門不會回傳該值)
+     * @property en 英文名稱(金門不會回傳該值)
      * */
     data class StationAddress(
         @SerializedName("Zh_tw")
-        val zh_tw: String,
+        val zh_tw: String? = "",
         @SerializedName("En")
-        val en: String
+        val en: String? = ""
     )
 }

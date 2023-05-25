@@ -14,4 +14,12 @@ class FetchStationDetailUseCase @Inject constructor(
     operator fun invoke(city: City): Single<StationDetailResponse> {
         return homeRepository.fetchStationDetail(sharePrefers.token, city)
     }
+
+    fun byStationUid(city: City, stationUID: String): Single<StationDetailResponse> {
+        return homeRepository.fetchStationDetailById(
+            sharePrefers.token,
+            city,
+            stationUID
+        )
+    }
 }

@@ -20,7 +20,7 @@ class StationDetailResponse : ArrayList<StationDetailResponse.Data>() {
         @SerializedName("StationID")
         val stationID: String,
         @SerializedName("ServiceStatus")
-        private val serviceStatus: Int,
+        val serviceStatus: Int,
         @SerializedName("ServiceType")
         val serviceType: Int,
         @SerializedName("AvailableRentBikes")

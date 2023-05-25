@@ -41,4 +41,15 @@ interface HomeApi {
         @Header("authorization") authorization: String,
         @Query("\$format") format: String = Config.API_FORMAT,
     ): Single<StationDetailResponse>
+
+    /**
+     * * 取得動態指定[縣市]的公共自行車即時車位資料
+     * */
+    @GET
+    fun fetchStationDetailById(
+        @Url url: String,
+        @Header("authorization") authorization: String,
+        @Query("\$format") format: String = Config.API_FORMAT,
+        @Query("\$filter") filter: String,
+    ): Single<StationDetailResponse>
 }
