@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -13,25 +12,29 @@ import android.view.View
 import android.widget.RelativeLayout
 import androidx.databinding.library.baseAdapters.BR
 import com.demo.ubike.R
+import com.demo.ubike.data.local.station.StationEntity
 import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
 import com.demo.ubike.extension.permission.PermissionCallback
+import com.demo.ubike.ui.view.MarkerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.ui.IconGenerator
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @SuppressLint("MissingPermission")
 @AndroidEntryPoint
 class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), OnMapReadyCallback,
-    LocationListener, OnCameraIdleListener {
+    LocationListener, OnCameraIdleListener, OnCameraMoveListener {
     companion object {
         fun newInstance() = MapFragment()
     }
@@ -41,7 +44,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     private lateinit var locationManager: LocationManager
     private val MIN_TIME: Long = 400
     private val MIN_DISTANCE = 1000f
-
+    private val VISIBLE_ZOOM_LEVEL = 12
     private val markers: MutableList<MarkerCheck> = mutableListOf()
 
     override fun getViewModelClass(): Class<MapViewModel> = MapViewModel::class.java
@@ -55,7 +58,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         mapFragment = childFragmentManager.findFragmentById(R.id.fragment_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        viewModel.fetchStationAndInsert()
+        viewModel.fetchAllStationAndInsert()
     }
 
     override fun initObserver() {
@@ -66,17 +69,11 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             stations.forEach { entity ->
                 val target = markers.firstOrNull { it.id == entity.stationUID }
                 if (target == null) {
-                    val pos = LatLng(
-                        entity.positionLat,
-                        entity.positionLon
-                    )
-                    val iconBitmap = BitmapFactory.decodeResource(resources, R.drawable.marker)
-                    val width = 100
-                    val height = 100
-                    val scaledBitmap = Bitmap.createScaledBitmap(iconBitmap, width, height, true)
+                    val pos = LatLng(entity.positionLat, entity.positionLon)
+                    val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(entity))
                     map.addMarker(
                         MarkerOptions()
-                            .icon(BitmapDescriptorFactory.fromBitmap(scaledBitmap))
+                            .icon(icon)
                             .position(pos)
                     )?.also { marker ->
                         marker.tag = entity
@@ -104,8 +101,17 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         }
     }
 
+    private fun getMarkerBitmap(entity: StationEntity): Bitmap {
+        val view = MarkerView(context = requireContext(), stationEntity = entity)
+        val iconGenerator = IconGenerator(requireContext())
+        iconGenerator.setContentView(view)
+        iconGenerator.setBackground(null)
+        return iconGenerator.makeIcon()
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        map.setOnCameraMoveListener(this)
         map.setOnCameraIdleListener(this)
         changeMapDefaultUi()
         moveToCurrentLocation()
@@ -121,11 +127,19 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     }
 
     override fun onCameraIdle() {
-        val cameraPosition = map.cameraPosition
-        val target = cameraPosition.target
+        val zoom = map.cameraPosition.zoom
+        val target = map.cameraPosition.target
         val latitude = target.latitude
         val longitude = target.longitude
-        viewModel.getStations(latitude, longitude)
+        if (zoom > VISIBLE_ZOOM_LEVEL) {
+            viewModel.getStations(latitude, longitude)
+        } else {
+            map.clear()
+        }
+    }
+
+    override fun onCameraMove() {
+        viewModel.cancelGetStations()
     }
 
     private fun moveToCurrentLocation() {
@@ -168,6 +182,9 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
         // 點marker時隱藏導航按鈕
         map.uiSettings.isMapToolbarEnabled = false
+
+        // 禁止旋轉地圖
+        map.uiSettings.isRotateGesturesEnabled = false
     }
 
     data class MarkerCheck(

@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="u_bike_1">#FFC78E</color>
+    <color name="u_bike_2">#FFFFFF</color>
+    <color name="t_bike">#A6FFA6</color>
+    <color name="p_bike">#FFFF37</color>
+    <color name="k_bike">#9F35FF</color>
 </resources>

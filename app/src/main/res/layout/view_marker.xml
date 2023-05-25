@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/card_station"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_marker"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/pin"
+            android:tint="#5E92F2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_circle"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:src="@drawable/marker_circle"
+            android:translationY="4dp"
+            app:layout_constraintEnd_toEndOf="@id/iv_marker"
+            app:layout_constraintStart_toStartOf="@id/iv_marker"
+            app:layout_constraintTop_toTopOf="@id/iv_marker" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
