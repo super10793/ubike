@@ -2,4 +2,11 @@
     <string name="app_name">ubike</string>
     <string name="bottom_map_title">地图</string>
     <string name="bottom_favorite_title">最爱</string>
+    <string name="status_normal">正常营运</string>
+    <string name="status_stop">停止营运</string>
+    <string name="status_pause">暂停营运</string>
+    <string name="available_rent">可租借：%s</string>
+    <string name="available_rent_detail">(电辅车：%s、一般自行车：%s)</string>
+    <string name="available_return">可归还：%s</string>
+    <string name="data_update_time">资料更新时间：%s</string>
 </resources>

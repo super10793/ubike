@@ -9,6 +9,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.RelativeLayout
 import androidx.databinding.library.baseAdapters.BR
 import com.demo.ubike.R
@@ -17,10 +18,13 @@ import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
 import com.demo.ubike.extension.permission.PermissionCallback
 import com.demo.ubike.ui.view.MarkerView
+import com.demo.ubike.ui.view.StationDetailView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -34,7 +38,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @SuppressLint("MissingPermission")
 @AndroidEntryPoint
 class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), OnMapReadyCallback,
-    LocationListener, OnCameraIdleListener, OnCameraMoveListener {
+    LocationListener, OnMarkerClickListener, OnCameraIdleListener, OnMapClickListener,
+    OnCameraMoveListener {
+
     companion object {
         fun newInstance() = MapFragment()
     }
@@ -99,6 +105,14 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                 }
             }
         }
+
+        viewModel.stationDetail.observe(viewLifecycleOwner) { response ->
+            if (response == null) return@observe
+            val detail = response[0]
+            val detailView =
+                viewDataBinding.flStationDetail.findViewWithTag<View>(detail.stationUID)
+            (detailView as? StationDetailView)?.updateStationDetail(detail)
+        }
     }
 
     private fun getMarkerBitmap(entity: StationEntity): Bitmap {
@@ -111,6 +125,8 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        map.setOnMarkerClickListener(this)
+        map.setOnMapClickListener(this)
         map.setOnCameraMoveListener(this)
         map.setOnCameraIdleListener(this)
         changeMapDefaultUi()
@@ -126,6 +142,26 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         locationManager.removeUpdates(this)
     }
 
+    override fun onMarkerClick(marker: Marker): Boolean {
+        val tag = marker.tag as? StationEntity
+        val detailView = viewDataBinding.flStationDetail.findViewWithTag<View>(tag?.stationUID)
+
+        // 如果重複點擊同個標記，就不需要再次addView
+        if (tag != null && detailView == null) {
+            val customView = StationDetailView(context = requireContext(), station = tag)
+            customView.tag = tag.stationUID
+            viewDataBinding.flStationDetail.removeAllViews()
+            viewDataBinding.flStationDetail.addView(customView)
+            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.bottom_up)
+            customView.clearAnimation()
+            customView.startAnimation(animation)
+            viewModel.fetchStationDetail(tag.city, tag.stationUID)
+        }
+
+        return false
+    }
+
+
     override fun onCameraIdle() {
         val zoom = map.cameraPosition.zoom
         val target = map.cameraPosition.target
@@ -140,6 +176,10 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override fun onCameraMove() {
         viewModel.cancelGetStations()
+    }
+
+    override fun onMapClick(latLng: LatLng) {
+        viewDataBinding.flStationDetail.removeAllViews()
     }
 
     private fun moveToCurrentLocation() {

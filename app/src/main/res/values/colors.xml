@@ -12,4 +12,7 @@
     <color name="t_bike">#A6FFA6</color>
     <color name="p_bike">#FFFF37</color>
     <color name="k_bike">#9F35FF</color>
+    <color name="status_normal">#00BB00</color>
+    <color name="status_stop">#FF0000</color>
+    <color name="status_pause">#9D9D9D</color>
 </resources>

@@ -3,8 +3,10 @@ package com.demo.ubike.data.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.demo.ubike.data.local.station.StationEntity
+import com.demo.ubike.data.model.City
 import com.demo.ubike.data.model.StationDetailResponse
 import com.demo.ubike.usecase.FetchAllStationAndInsertUseCase
+import com.demo.ubike.usecase.FetchStationDetailUseCase
 import com.demo.ubike.usecase.GetStationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -15,11 +17,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
+    private val fetchStationDetailUseCase: FetchStationDetailUseCase,
     private val fetchAllStationAndInsertUseCase: FetchAllStationAndInsertUseCase,
     private val getStationsUseCase: GetStationsUseCase
 ) : BaseViewModel() {
     private val _stations = MutableLiveData<List<StationEntity>>()
     var stations: LiveData<List<StationEntity>> = _stations
+
+    private val _stationDetail = MutableLiveData<StationDetailResponse>()
+    var stationDetail: LiveData<StationDetailResponse> = _stationDetail
 
     private var disposable: Disposable? = null
 
@@ -28,7 +34,7 @@ class MapViewModel @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                // success
+                // nothing
             }, {
                 throw it
             })
@@ -54,5 +60,20 @@ class MapViewModel @Inject constructor(
 
     fun cancelGetStations() {
         disposable?.dispose()
+    }
+
+    fun fetchStationDetail(city: City, stationId: String) {
+        fetchStationDetailUseCase.byStationUid(city, stationId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                _stationDetail.value = it
+            }, {
+                throw it
+            })
+            .also {
+                addDisposable(it)
+            }
+
     }
 }
