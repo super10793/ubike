@@ -1,6 +1,7 @@
 package com.demo.ubike.ui.activity
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.databinding.library.baseAdapters.BR
 import com.demo.ubike.R
 import com.demo.ubike.databinding.ActivityMainBinding
@@ -12,4 +13,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override val bindingVariable: Int
         get() = BR.mainViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 不進入休眠
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
 }
