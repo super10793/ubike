@@ -16,7 +16,8 @@ class StationDetailView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    private val station: StationEntity
+    private val station: StationEntity,
+    private val closeListener: OnStationDetailCloseListener? = null
 ) : CardView(context, attrs, defStyleAttr) {
     private val binding: ViewStationDetailBinding = ViewStationDetailBinding.inflate(
         LayoutInflater.from(context),
@@ -36,6 +37,7 @@ class StationDetailView @JvmOverloads constructor(
 
     private fun setListener() {
         binding.btnClose.setOnClickListener {
+            closeListener?.onStationDetailClose()
             this.removeFromParent()
         }
     }

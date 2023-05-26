@@ -18,6 +18,7 @@ import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
 import com.demo.ubike.extension.permission.PermissionCallback
 import com.demo.ubike.ui.view.MarkerView
+import com.demo.ubike.ui.view.OnStationDetailCloseListener
 import com.demo.ubike.ui.view.StationDetailView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -39,7 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), OnMapReadyCallback,
     LocationListener, OnMarkerClickListener, OnCameraIdleListener, OnMapClickListener,
-    OnCameraMoveListener {
+    OnCameraMoveListener, OnStationDetailCloseListener {
 
     companion object {
         fun newInstance() = MapFragment()
@@ -52,6 +53,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     private val MIN_DISTANCE = 1000f
     private val VISIBLE_ZOOM_LEVEL = 12
     private val markers: MutableList<MarkerCheck> = mutableListOf()
+    private var lastClickMarker: Marker? = null
 
     override fun getViewModelClass(): Class<MapViewModel> = MapViewModel::class.java
 
@@ -76,7 +78,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                 val target = markers.firstOrNull { it.id == entity.stationUID }
                 if (target == null) {
                     val pos = LatLng(entity.positionLat, entity.positionLon)
-                    val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(entity))
+                    val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(entity, false))
                     map.addMarker(
                         MarkerOptions()
                             .icon(icon)
@@ -115,8 +117,12 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         }
     }
 
-    private fun getMarkerBitmap(entity: StationEntity): Bitmap {
-        val view = MarkerView(context = requireContext(), stationEntity = entity)
+    private fun getMarkerBitmap(entity: StationEntity, highlight: Boolean): Bitmap {
+        val view = MarkerView(
+            context = requireContext(),
+            stationEntity = entity,
+            needHighlight = highlight
+        )
         val iconGenerator = IconGenerator(requireContext())
         iconGenerator.setContentView(view)
         iconGenerator.setBackground(null)
@@ -148,7 +154,16 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
         // 如果重複點擊同個標記，就不需要再次addView
         if (tag != null && detailView == null) {
-            val customView = StationDetailView(context = requireContext(), station = tag)
+            val highlightIcon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, true))
+            marker.setIcon(highlightIcon)
+            restoreLastMarker()
+            lastClickMarker = marker
+
+            val customView = StationDetailView(
+                context = requireContext(),
+                station = tag,
+                closeListener = this
+            )
             customView.tag = tag.stationUID
             viewDataBinding.flStationDetail.removeAllViews()
             viewDataBinding.flStationDetail.addView(customView)
@@ -171,6 +186,9 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             viewModel.getStations(latitude, longitude)
         } else {
             map.clear()
+            markers.clear()
+            lastClickMarker = null
+            viewDataBinding.flStationDetail.removeAllViews()
         }
     }
 
@@ -180,6 +198,22 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override fun onMapClick(latLng: LatLng) {
         viewDataBinding.flStationDetail.removeAllViews()
+        restoreLastMarker()
+    }
+
+    override fun onStationDetailClose() {
+        restoreLastMarker()
+    }
+
+    private fun restoreLastMarker() {
+        lastClickMarker?.apply {
+            val tag = this.tag as? StationEntity
+            tag?.let {
+                val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, false))
+                setIcon(icon)
+            }
+            lastClickMarker = null
+        }
     }
 
     private fun moveToCurrentLocation() {
