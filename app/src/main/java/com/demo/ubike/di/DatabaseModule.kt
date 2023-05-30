@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.demo.ubike.Config
 import com.demo.ubike.data.local.AppDatabase
+import com.demo.ubike.data.local.favorite.FavoriteDao
 import com.demo.ubike.data.local.station.StationDao
 import dagger.Module
 import dagger.Provides
@@ -31,5 +32,13 @@ object DatabaseModule {
         appDatabase: AppDatabase
     ): StationDao {
         return appDatabase.stationDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFavoriteDao(
+        appDatabase: AppDatabase
+    ): FavoriteDao {
+        return appDatabase.favoriteDao()
     }
 }

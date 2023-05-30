@@ -2,6 +2,7 @@ package com.demo.ubike.di
 
 import android.content.Context
 import com.demo.ubike.data.api.HomeApi
+import com.demo.ubike.data.local.favorite.FavoriteDao
 import com.demo.ubike.data.local.station.StationDao
 import com.demo.ubike.data.repository.HomeRepository
 import com.demo.ubike.data.repository.HomeRepositoryImpl
@@ -22,13 +23,15 @@ object RepositoryModule {
         @ApplicationContext context: Context,
         sharePreferenceManager: SharePreferenceManager,
         homeApi: HomeApi,
-        stationDao: StationDao
+        stationDao: StationDao,
+        favoriteDao: FavoriteDao,
     ): HomeRepository {
         return HomeRepositoryImpl(
             context,
             sharePreferenceManager,
             homeApi,
-            stationDao
+            stationDao,
+            favoriteDao
         )
     }
 }

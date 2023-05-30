@@ -1,5 +1,6 @@
 package com.demo.ubike.data.repository
 
+import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.local.station.StationEntity
 import com.demo.ubike.data.model.City
 import com.demo.ubike.data.model.StationDetailResponse
@@ -29,4 +30,10 @@ interface HomeRepository {
     ): Single<StationDetailResponse>
 
     fun getStationsByLocation(lat: Double, lon: Double): Observable<List<StationEntity>>
+
+    fun checkFavoriteIsExist(stationUid: String): Single<Boolean>
+
+    fun addFavorite(entity: FavoriteEntity): Completable
+
+    fun removeFavorite(stationUid: String): Completable
 }

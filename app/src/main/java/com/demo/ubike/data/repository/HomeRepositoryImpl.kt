@@ -4,6 +4,8 @@ import android.content.Context
 import com.demo.ubike.Config
 import com.demo.ubike.R
 import com.demo.ubike.data.api.HomeApi
+import com.demo.ubike.data.local.favorite.FavoriteDao
+import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.local.station.StationDao
 import com.demo.ubike.data.local.station.StationDetailEntity
 import com.demo.ubike.data.local.station.StationEntity
@@ -22,7 +24,8 @@ class HomeRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sharePrefer: SharePreferenceManager,
     private val homeApi: HomeApi,
-    private val stationDao: StationDao
+    private val stationDao: StationDao,
+    private val favoriteDao: FavoriteDao
 ) : HomeRepository {
     override fun fetchToken(): Single<TokenResponse> {
         return homeApi.fetchToken()
@@ -155,5 +158,17 @@ class HomeRepositoryImpl @Inject constructor(
         val maxLon = lon + 0.017
         val minLon = lon - 0.017
         return stationDao.getStationsByLocation(maxLat, minLat, maxLon, minLon)
+    }
+
+    override fun checkFavoriteIsExist(stationUid: String): Single<Boolean> {
+        return favoriteDao.checkFavoriteIsExist(stationUid)
+    }
+
+    override fun addFavorite(entity: FavoriteEntity): Completable {
+        return favoriteDao.insertFavorite(entity)
+    }
+
+    override fun removeFavorite(stationUid: String): Completable {
+        return favoriteDao.removeFavorite(stationUid)
     }
 }

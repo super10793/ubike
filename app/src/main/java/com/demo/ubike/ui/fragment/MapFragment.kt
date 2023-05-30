@@ -18,7 +18,7 @@ import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
 import com.demo.ubike.extension.permission.PermissionCallback
 import com.demo.ubike.ui.view.MarkerView
-import com.demo.ubike.ui.view.OnStationDetailCloseListener
+import com.demo.ubike.ui.view.OnStationDetailListener
 import com.demo.ubike.ui.view.StationDetailView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -40,7 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), OnMapReadyCallback,
     LocationListener, OnMarkerClickListener, OnCameraIdleListener, OnMapClickListener,
-    OnCameraMoveListener, OnStationDetailCloseListener {
+    OnCameraMoveListener, OnStationDetailListener {
 
     companion object {
         fun newInstance() = MapFragment()
@@ -107,14 +107,6 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                 }
             }
         }
-
-        viewModel.stationDetail.observe(viewLifecycleOwner) { response ->
-            if (response == null) return@observe
-            val detail = response[0]
-            val detailView =
-                viewDataBinding.flStationDetail.findViewWithTag<View>(detail.stationUID)
-            (detailView as? StationDetailView)?.updateStationDetail(detail)
-        }
     }
 
     private fun getMarkerBitmap(entity: StationEntity, highlight: Boolean): Bitmap {
@@ -162,7 +154,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             val customView = StationDetailView(
                 context = requireContext(),
                 station = tag,
-                closeListener = this
+                listener = this
             )
             customView.tag = tag.stationUID
             viewDataBinding.flStationDetail.removeAllViews()

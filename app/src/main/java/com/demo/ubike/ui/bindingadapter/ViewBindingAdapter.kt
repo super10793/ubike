@@ -101,6 +101,18 @@ fun setStatusLight(
     }
 }
 
+@BindingAdapter("isFavorite")
+fun setIsFavorite(
+    imageView: AppCompatImageView,
+    isFavorite: Boolean?
+) {
+    val imageResource = when (isFavorite) {
+        true -> R.drawable.favorite
+        else -> R.drawable.favorite_border
+    }
+    imageView.setImageResource(imageResource)
+}
+
 @BindingAdapter("showBlockImage")
 fun setShowBlockImage(
     imageView: AppCompatImageView,
