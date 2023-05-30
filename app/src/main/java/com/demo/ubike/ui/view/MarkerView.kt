@@ -12,6 +12,7 @@ import androidx.core.widget.ImageViewCompat
 import com.demo.ubike.R
 import com.demo.ubike.data.local.station.StationEntity
 import com.demo.ubike.data.model.ServiceType
+import com.demo.ubike.data.model.getServiceTypeByKey
 import com.demo.ubike.databinding.ViewMarkerBinding
 
 @SuppressLint("ViewConstructor")
@@ -37,7 +38,7 @@ class MarkerView @JvmOverloads constructor(
         val imageView = binding.ivCircle
         val color = ContextCompat.getColor(
             context,
-            when (stationEntity.getServiceTypeValue()) {
+            when (getServiceTypeByKey(stationEntity.serviceType)) {
                 ServiceType.UBike1_0 -> R.color.u_bike_1
                 ServiceType.UBike2_0 -> R.color.u_bike_2
                 ServiceType.TBike -> R.color.t_bike

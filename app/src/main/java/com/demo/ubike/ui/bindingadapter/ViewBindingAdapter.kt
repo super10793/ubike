@@ -8,6 +8,7 @@ import androidx.databinding.BindingAdapter
 import com.demo.ubike.R
 import com.demo.ubike.data.model.ServiceStatus
 import com.demo.ubike.data.model.StationDetailResponse
+import com.demo.ubike.data.model.getServiceStatusByKey
 
 @BindingAdapter("stationStatusText")
 fun setStationStatusText(
@@ -16,13 +17,13 @@ fun setStationStatusText(
 ) {
     stationDetail?.let {
         val context = textview.context
-        val text = when (it.getServiceStatus()) {
+        val text = when (getServiceStatusByKey(it.serviceStatus)) {
             ServiceStatus.Stop -> context.getString(R.string.status_stop)
             ServiceStatus.Normal -> context.getString(R.string.status_normal)
             ServiceStatus.Pause -> context.getString(R.string.status_pause)
             else -> context.getString(R.string.status_normal)
         }
-        val color = when (it.getServiceStatus()) {
+        val color = when (getServiceStatusByKey(it.serviceStatus)) {
             ServiceStatus.Stop -> R.color.status_stop
             ServiceStatus.Normal -> R.color.status_normal
             ServiceStatus.Pause -> R.color.status_pause
@@ -91,7 +92,7 @@ fun setStatusLight(
     stationDetail: StationDetailResponse.Data?
 ) {
     stationDetail?.let {
-        val imageResource = when (it.getServiceStatus()) {
+        val imageResource = when (getServiceStatusByKey(it.serviceStatus)) {
             ServiceStatus.Normal -> R.drawable.status_normal_circle
             ServiceStatus.Pause -> R.drawable.status_pause_circle
             ServiceStatus.Stop -> R.drawable.status_stop_circle
@@ -119,7 +120,7 @@ fun setShowBlockImage(
     stationDetail: StationDetailResponse.Data?
 ) {
     stationDetail?.let {
-        imageView.visibility = when (it.getServiceStatus()) {
+        imageView.visibility = when (getServiceStatusByKey(it.serviceStatus)) {
             ServiceStatus.Pause -> View.VISIBLE
             ServiceStatus.Stop -> View.VISIBLE
             else -> View.GONE

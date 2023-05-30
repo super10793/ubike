@@ -6,8 +6,8 @@ class StationDetailResponse : ArrayList<StationDetailResponse.Data>() {
     /**
      * @property stationUID 站點唯一識別代碼
      * @property stationID 站點代碼
-     * @property serviceStatus 服務狀態
-     * @property serviceType 服務類型
+     * @property serviceStatus 服務狀態，參考[ServiceStatus]
+     * @property serviceType 服務類型，參考[ServiceType]
      * @property availableRentBikes 可租借車數
      * @property availableReturnBikes 可歸還車數
      * @property availableRentBikesDetail 可租借一般自行車、電動輔助車數量
@@ -33,16 +33,7 @@ class StationDetailResponse : ArrayList<StationDetailResponse.Data>() {
         val srcUpdateTime: String,
         @SerializedName("UpdateTime")
         val updateTime: String,
-    ) {
-        fun getServiceStatus(): ServiceStatus {
-            return when (serviceStatus) {
-                ServiceStatus.Stop.key -> ServiceStatus.Stop
-                ServiceStatus.Normal.key -> ServiceStatus.Normal
-                ServiceStatus.Pause.key -> ServiceStatus.Pause
-                else -> ServiceStatus.Unknown
-            }
-        }
-    }
+    )
 
     /**
      * @property generalBikes：一般自行車可租借車數

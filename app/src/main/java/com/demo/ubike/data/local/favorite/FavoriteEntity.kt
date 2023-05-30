@@ -3,7 +3,6 @@ package com.demo.ubike.data.local.favorite
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.demo.ubike.data.model.City
-import com.demo.ubike.data.model.ServiceType
 
 @Entity(tableName = "FavoriteEntity")
 data class FavoriteEntity(
