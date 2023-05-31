@@ -25,13 +25,18 @@ class HomeFragment : BasePermissionFragment<FragmentHomeBinding, HomeViewModel>(
         initNavView()
     }
 
-    override fun initObserver() {}
+    override fun initObserver() {
+        viewModel.favoriteItemClicked.observe(viewLifecycleOwner) {
+            viewDataBinding.viewPager.currentItem = 0
+        }
+    }
 
     private fun initViewPager() {
         val fragments = listOf(
             MapFragment.newInstance(),
             FavoriteFragment.newInstance()
         )
+
         viewDataBinding.viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
                 return fragments.size
@@ -64,10 +69,12 @@ class HomeFragment : BasePermissionFragment<FragmentHomeBinding, HomeViewModel>(
                     viewDataBinding.viewPager.currentItem = 0
                     true
                 }
+
                 R.id.favoriteFragment -> {
                     viewDataBinding.viewPager.currentItem = 1
                     true
                 }
+
                 else -> false
             }
         }

@@ -171,4 +171,8 @@ class HomeRepositoryImpl @Inject constructor(
     override fun removeFavorite(stationUid: String): Completable {
         return favoriteDao.removeFavorite(stationUid)
     }
+
+    override fun getAllFavorite(): Single<List<FavoriteEntity>> {
+        return favoriteDao.getAllFavorite()
+    }
 }

@@ -36,4 +36,6 @@ interface HomeRepository {
     fun addFavorite(entity: FavoriteEntity): Completable
 
     fun removeFavorite(stationUid: String): Completable
+
+    fun getAllFavorite(): Single<List<FavoriteEntity>>
 }

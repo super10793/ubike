@@ -10,6 +10,9 @@ import io.reactivex.Single
 
 @Dao
 interface FavoriteDao {
+    @Query("SELECT * FROM FavoriteEntity")
+    fun getAllFavorite(): Single<List<FavoriteEntity>>
+
     @Query("SELECT EXISTS (SELECT 1 FROM FavoriteEntity WHERE stationUID = :stationUid)")
     fun checkFavoriteIsExist(stationUid: String): Single<Boolean>
 

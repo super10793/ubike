@@ -12,8 +12,11 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.RelativeLayout
 import androidx.databinding.library.baseAdapters.BR
+import androidx.fragment.app.viewModels
 import com.demo.ubike.R
+import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.local.station.StationEntity
+import com.demo.ubike.data.viewmodel.HomeViewModel
 import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
 import com.demo.ubike.extension.permission.PermissionCallback
@@ -54,6 +57,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     private val VISIBLE_ZOOM_LEVEL = 12
     private val markers: MutableList<MarkerCheck> = mutableListOf()
     private var lastClickMarker: Marker? = null
+    private var selectFromFavorite: FavoriteEntity? = null
 
     override fun getViewModelClass(): Class<MapViewModel> = MapViewModel::class.java
 
@@ -61,12 +65,21 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override val bindingVariable: Int = BR.mapViewModel
 
+    private val homeViewModel: HomeViewModel by viewModels({ requireParentFragment() })
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapFragment = childFragmentManager.findFragmentById(R.id.fragment_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         viewModel.fetchAllStationAndInsert()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        restoreLastMarker()
+        viewDataBinding.flStationDetail.removeAllViews()
+        selectFromFavorite = null
     }
 
     override fun initObserver() {
@@ -98,6 +111,14 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                 }
             }
 
+            // auto click marker when favorite fragment click some item
+            markers.find {
+                it.id == selectFromFavorite?.stationUID
+            }?.also {
+                onMarkerClick(it.marker)
+                selectFromFavorite = null
+            }
+
             markers.removeAll { item ->
                 if (item.checked) {
                     false
@@ -106,6 +127,13 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                     true
                 }
             }
+        }
+
+        homeViewModel.favoriteItemClicked.observe(viewLifecycleOwner) {
+            selectFromFavorite = it
+            val latLng = LatLng(it.positionLat, it.positionLon)
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16f)
+            map.moveCamera(cameraUpdate)
         }
     }
 
@@ -136,7 +164,6 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16f)
         map.moveCamera(cameraUpdate)
         map.isMyLocationEnabled = true
-        viewModel.getStations(location.latitude, location.longitude)
         locationManager.removeUpdates(this)
     }
 

@@ -9,4 +9,5 @@
     <string name="available_rent_detail">(電輔車：%s、一般自行車：%s)</string>
     <string name="available_return">可歸還：%s</string>
     <string name="data_update_time">資料更新時間：%s</string>
+    <string name="favorite_list_is_empty">目前沒有任何收藏站點</string>
 </resources>
