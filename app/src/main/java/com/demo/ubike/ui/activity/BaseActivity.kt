@@ -31,4 +31,7 @@ abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity() {
         _viewDataBinding = null
     }
 
+    override fun onBackPressed() {
+        //do nothing
+    }
 }
