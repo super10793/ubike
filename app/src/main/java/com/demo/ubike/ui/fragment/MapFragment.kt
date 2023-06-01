@@ -55,8 +55,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     private val MIN_TIME: Long = 400
     private val MIN_DISTANCE = 1000f
     private val VISIBLE_ZOOM_LEVEL = 12
-    private val markers: MutableList<MarkerCheck> = mutableListOf()
-    private var lastClickMarker: Marker? = null
+    private val markers: MutableList<MarkerDetail> = mutableListOf()
     private var selectFromFavorite: FavoriteEntity? = null
 
     override fun getViewModelClass(): Class<MapViewModel> = MapViewModel::class.java
@@ -86,7 +85,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         viewModel.stations.observe(viewLifecycleOwner) { stations ->
             if (!::map.isInitialized) return@observe
             if (stations == null || stations.isEmpty()) return@observe
-            markers.forEach { marker -> marker.checked = false }
+            markers.forEach { marker -> marker.existOnMap = false }
             stations.forEach { entity ->
                 val target = markers.firstOrNull { it.id == entity.stationUID }
                 if (target == null) {
@@ -99,15 +98,15 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                     )?.also { marker ->
                         marker.tag = entity
                         markers.add(
-                            MarkerCheck(
+                            MarkerDetail(
                                 id = entity.stationUID,
                                 marker = marker,
-                                checked = true
+                                existOnMap = true
                             )
                         )
                     }
                 } else {
-                    target.checked = true
+                    target.existOnMap = true
                 }
             }
 
@@ -120,7 +119,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             }
 
             markers.removeAll { item ->
-                if (item.checked) {
+                if (item.existOnMap) {
                     false
                 } else {
                     item.marker.remove()
@@ -176,7 +175,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             val highlightIcon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, true))
             marker.setIcon(highlightIcon)
             restoreLastMarker()
-            lastClickMarker = marker
+            markers.firstOrNull { it.id == tag.stationUID }?.isLastClick = true
 
             val customView = StationDetailView(
                 context = requireContext(),
@@ -206,7 +205,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         } else {
             map.clear()
             markers.clear()
-            lastClickMarker = null
+            markers.forEach { it.isLastClick = false }
             viewDataBinding.flStationDetail.removeAllViews()
         }
     }
@@ -225,13 +224,15 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     }
 
     private fun restoreLastMarker() {
-        lastClickMarker?.apply {
-            val tag = this.tag as? StationEntity
+        val target = markers.firstOrNull { it.isLastClick }
+        target?.apply {
+            val marker = this.marker
+            val tag = marker.tag as? StationEntity
             tag?.let {
                 val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, false))
-                setIcon(icon)
+                marker.setIcon(icon)
             }
-            lastClickMarker = null
+            this.isLastClick = false
         }
     }
 
@@ -280,9 +281,10 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         map.uiSettings.isRotateGesturesEnabled = false
     }
 
-    data class MarkerCheck(
+    data class MarkerDetail(
         var id: String,
         var marker: Marker,
-        var checked: Boolean
+        var existOnMap: Boolean,
+        var isLastClick: Boolean = false
     )
 }
