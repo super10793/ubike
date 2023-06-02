@@ -10,4 +10,13 @@
     <string name="available_return">可归还：%s</string>
     <string name="data_update_time">资料更新时间：%s</string>
     <string name="favorite_list_is_empty">目前没有任何收藏站点</string>
+    <string name="default_dialog_title">讯息</string>
+    <string name="submit">确定</string>
+    <string name="cancel">取消</string>
+    <string name="error00001">token失效，点击确定按钮重新拿取。%s</string>
+    <string name="error00002">错误代码：00002\n网路不稳定，确认看看网路是否正常。%s</string>
+    <string name="error00003">错误代码：00003\n网路不稳定，确认看看网路是否正常。%s</string>
+    <string name="error00004">错误代码：00004\n网路不稳定，确认看看网路是否正常。%s</string>
+    <string name="error00005">错误代码：00005\n网路不稳定，确认看看网路是否正常。%s</string>
+    <string name="error99999">不明错误，%s</string>
 </resources>
