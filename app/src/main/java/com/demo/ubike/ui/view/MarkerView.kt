@@ -14,6 +14,7 @@ import com.demo.ubike.data.local.station.StationEntity
 import com.demo.ubike.data.model.ServiceType
 import com.demo.ubike.data.model.getServiceTypeByKey
 import com.demo.ubike.databinding.ViewMarkerBinding
+import com.demo.ubike.extension.view.dpToPx
 
 @SuppressLint("ViewConstructor")
 class MarkerView @JvmOverloads constructor(
@@ -53,28 +54,18 @@ class MarkerView @JvmOverloads constructor(
     private fun highlight() {
         // marker
         val markerLayoutParams = binding.ivMarker.layoutParams
-        markerLayoutParams.width = dpToPx(50)
-        markerLayoutParams.height = dpToPx(50)
+        markerLayoutParams.width = context.dpToPx(50)
+        markerLayoutParams.height = context.dpToPx(50)
         binding.ivMarker.layoutParams = markerLayoutParams
 
         // circle
         val circleLayoutParams = binding.ivCircle.layoutParams
-        circleLayoutParams.width = dpToPx(28)
-        circleLayoutParams.height = dpToPx(28)
-        binding.ivCircle.translationY = dpToPx(7f)
+        circleLayoutParams.width = context.dpToPx(28)
+        circleLayoutParams.height = context.dpToPx(28)
+        binding.ivCircle.translationY = context.dpToPx(7f)
         binding.ivCircle.layoutParams = circleLayoutParams
 
         // light
         binding.ivLight.visibility = View.VISIBLE
-    }
-
-    private fun dpToPx(dp: Int): Int {
-        val scale = resources.displayMetrics.density
-        return (dp * scale + 0.5f).toInt()
-    }
-
-    private fun dpToPx(dp: Float): Float {
-        val scale = resources.displayMetrics.density
-        return dp * scale
     }
 }
