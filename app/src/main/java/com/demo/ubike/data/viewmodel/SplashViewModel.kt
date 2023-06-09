@@ -42,7 +42,7 @@ class SplashViewModel @Inject constructor(
     }
 
     fun startProgress() {
-        val disposable = Observable.intervalRange(0, 101, 100, 20, TimeUnit.MILLISECONDS)
+        val disposable = Observable.intervalRange(0, 101, 0, 10, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
