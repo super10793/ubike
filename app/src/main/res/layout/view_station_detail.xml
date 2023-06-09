@@ -169,14 +169,14 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/tv_status_light"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="15dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:statusLight="@{stationDetail}"
+                app:statusLight="@{stationDetail.serviceStatus}"
                 tools:src="@drawable/status_normal_circle" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -186,11 +186,11 @@
                 android:layout_marginStart="3dp"
                 android:gravity="center_vertical"
                 android:textColor="@color/black"
-                android:textSize="20dp"
+                android:textSize="15dp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_status_light"
                 app:layout_constraintStart_toEndOf="@id/tv_status_light"
                 app:layout_constraintTop_toTopOf="@id/tv_status_light"
-                app:stationStatusText="@{stationDetail}"
+                app:stationStatusText="@{stationDetail.serviceStatus}"
                 tools:ignore="SpUsage"
                 tools:text="正常營運" />
 

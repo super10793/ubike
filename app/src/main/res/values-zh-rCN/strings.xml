@@ -8,7 +8,7 @@
     <string name="available_rent">可租借：%s</string>
     <string name="available_rent_detail">(电辅车：%s、一般自行车：%s)</string>
     <string name="available_return">可归还：%s</string>
-    <string name="data_update_time">资料更新时间：%s</string>
+    <string name="data_update_time">．资料更新时间：%s</string>
     <string name="favorite_list_is_empty">目前没有任何收藏站点</string>
     <string name="default_dialog_title">讯息</string>
     <string name="submit">确定</string>
@@ -19,4 +19,10 @@
     <string name="error00004">错误代码：00004\n网路不稳定，确认看看网路是否正常。%s</string>
     <string name="error00005">错误代码：00005\n网路不稳定，确认看看网路是否正常。%s</string>
     <string name="error99999">不明错误，%s</string>
+    <string name="loading">读取中..</string>
+    <string name="fetch_data_after_secs">%d 秒後更新資料</string>
+    <string name="electric_bike">電輔車：</string>
+    <string name="status_normal_with_newline">正常\n营运</string>
+    <string name="status_stop_with_newline">停止\n营运</string>
+    <string name="status_pause_with_newline">暂停\n营运</string>
 </resources>

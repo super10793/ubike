@@ -60,6 +60,12 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
                 }
             }
         )
+
+        viewModel.stationDetails.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                adapter?.updateItem(it[0])
+            }
+        }
     }
 
     override fun onFavoriteRemoveClick(stationUid: String) {
@@ -71,7 +77,7 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
     }
 
     private fun initRecyclerView() {
-        adapter = FavoriteAdapter()
+        adapter = FavoriteAdapter(viewModel)
         adapter?.setOnItemClickListener(this)
         viewDataBinding.rvList.layoutManager = LinearLayoutManager(context)
         viewDataBinding.rvList.adapter = adapter

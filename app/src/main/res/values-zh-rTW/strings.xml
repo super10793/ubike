@@ -8,7 +8,7 @@
     <string name="available_rent">可租借：%s</string>
     <string name="available_rent_detail">(電輔車：%s、一般自行車：%s)</string>
     <string name="available_return">可歸還：%s</string>
-    <string name="data_update_time">資料更新時間：%s</string>
+    <string name="data_update_time">．資料更新時間：%s</string>
     <string name="favorite_list_is_empty">目前沒有任何收藏站點</string>
     <string name="default_dialog_title">訊息</string>
     <string name="submit">確定</string>
@@ -19,4 +19,10 @@
     <string name="error00004">錯誤代碼：00004\n網路不穩定，確認看看網路是否正常。%s</string>
     <string name="error00005">錯誤代碼：00005\n網路不穩定，確認看看網路是否正常。%s</string>
     <string name="error99999">不明錯誤，%s</string>
+    <string name="loading">讀取中..</string>
+    <string name="fetch_data_after_secs">%d 秒後更新資料</string>
+    <string name="electric_bike">電輔車：</string>
+    <string name="status_normal_with_newline">正常\n營運</string>
+    <string name="status_stop_with_newline">停止\n營運</string>
+    <string name="status_pause_with_newline">暫停\n營運</string>
 </resources>

@@ -7,31 +7,42 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.demo.ubike.R
 import com.demo.ubike.data.model.ServiceStatus
+import com.demo.ubike.data.model.ServiceType
 import com.demo.ubike.data.model.StationDetailResponse
 import com.demo.ubike.data.model.getServiceStatusByKey
+import com.demo.ubike.data.model.getServiceTypeByKey
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @BindingAdapter("stationStatusText")
 fun setStationStatusText(
     textview: AppCompatTextView,
-    stationDetail: StationDetailResponse.Data?
+    stationStatus: Int?
 ) {
-    stationDetail?.let {
-        val context = textview.context
-        val text = when (getServiceStatusByKey(it.serviceStatus)) {
-            ServiceStatus.Stop -> context.getString(R.string.status_stop)
-            ServiceStatus.Normal -> context.getString(R.string.status_normal)
-            ServiceStatus.Pause -> context.getString(R.string.status_pause)
-            else -> context.getString(R.string.status_normal)
-        }
-        val color = when (getServiceStatusByKey(it.serviceStatus)) {
-            ServiceStatus.Stop -> R.color.status_stop
-            ServiceStatus.Normal -> R.color.status_normal
-            ServiceStatus.Pause -> R.color.status_pause
-            else -> R.color.status_normal
+    when (stationStatus) {
+        null -> {
+            textview.visibility = View.INVISIBLE
         }
 
-        textview.text = text
-        textview.setTextColor(ContextCompat.getColor(context, color))
+        else -> {
+            val context = textview.context
+            val text = when (getServiceStatusByKey(stationStatus)) {
+                ServiceStatus.Stop -> context.getString(R.string.status_stop)
+                ServiceStatus.Normal -> context.getString(R.string.status_normal)
+                ServiceStatus.Pause -> context.getString(R.string.status_pause)
+                else -> context.getString(R.string.status_normal)
+            }
+            val color = when (getServiceStatusByKey(stationStatus)) {
+                ServiceStatus.Stop -> R.color.status_stop
+                ServiceStatus.Normal -> R.color.status_normal
+                ServiceStatus.Pause -> R.color.status_pause
+                else -> R.color.status_normal
+            }
+
+            textview.visibility = View.VISIBLE
+            textview.text = text
+            textview.setTextColor(ContextCompat.getColor(context, color))
+        }
     }
 }
 
@@ -89,16 +100,23 @@ fun setStationUpdateTimeText(
 @BindingAdapter("statusLight")
 fun setStatusLight(
     imageView: AppCompatImageView,
-    stationDetail: StationDetailResponse.Data?
+    stationStatus: Int?
 ) {
-    stationDetail?.let {
-        val imageResource = when (getServiceStatusByKey(it.serviceStatus)) {
-            ServiceStatus.Normal -> R.drawable.status_normal_circle
-            ServiceStatus.Pause -> R.drawable.status_pause_circle
-            ServiceStatus.Stop -> R.drawable.status_stop_circle
-            else -> R.drawable.status_stop_circle
+    when (stationStatus) {
+        null -> {
+            imageView.visibility = View.INVISIBLE
         }
-        imageView.setImageResource(imageResource)
+
+        else -> {
+            imageView.visibility = View.VISIBLE
+            val imageResource = when (getServiceStatusByKey(stationStatus)) {
+                ServiceStatus.Normal -> R.drawable.status_normal_circle
+                ServiceStatus.Pause -> R.drawable.status_pause_circle
+                ServiceStatus.Stop -> R.drawable.status_stop_circle
+                else -> R.drawable.status_stop_circle
+            }
+            imageView.setImageResource(imageResource)
+        }
     }
 }
 
@@ -126,4 +144,147 @@ fun setShowBlockImage(
             else -> View.GONE
         }
     }
+}
+
+@BindingAdapter("formatStationName")
+fun setFormatStationName(
+    textview: AppCompatTextView,
+    stationName: String?
+) {
+    textview.text = stationName
+        ?.replace("YouBike1.0_", "", true)
+        ?.replace("YouBike2.0_", "", true)
+        ?.replace("iBike1.0_", "", true)
+        ?: ""
+}
+
+@BindingAdapter("stationIconColor")
+fun setStationIconColor(
+    imageview: AppCompatImageView,
+    stationType: Int?
+) {
+    stationType?.let {
+        val context = imageview.context
+        val color = when (getServiceTypeByKey(it)) {
+            ServiceType.UBike1_0 -> R.color.u_bike_1
+            ServiceType.UBike2_0 -> R.color.u_bike_2
+            ServiceType.TBike -> R.color.t_bike
+            ServiceType.PBike -> R.color.p_bike
+            ServiceType.KBike -> R.color.k_bike
+            else -> R.color.u_bike_2
+        }
+        val tint = ContextCompat.getColor(context, color)
+        imageview.setColorFilter(tint)
+    }
+}
+
+@BindingAdapter("stationTxtAndColor")
+fun setStationTxtAndColor(
+    textview: AppCompatTextView,
+    stationType: Int?
+) {
+    stationType?.let {
+        val context = textview.context
+        val color = when (getServiceTypeByKey(it)) {
+            ServiceType.UBike1_0 -> R.color.u_bike_1
+            ServiceType.UBike2_0 -> R.color.u_bike_2
+            ServiceType.TBike -> R.color.t_bike
+            ServiceType.PBike -> R.color.p_bike
+            ServiceType.KBike -> R.color.k_bike
+            else -> R.color.u_bike_2
+        }
+        val txt = when (getServiceTypeByKey(it)) {
+            ServiceType.UBike1_0 -> context.getString(R.string.ubike_1)
+            ServiceType.UBike2_0 -> context.getString(R.string.ubike_2)
+            ServiceType.TBike -> context.getString(R.string.tbike)
+            ServiceType.PBike -> context.getString(R.string.pbike)
+            ServiceType.KBike -> context.getString(R.string.kbike)
+            else -> context.getString(R.string.ubike_2)
+        }
+        textview.setTextColor(ContextCompat.getColor(context, color))
+        textview.text = context.getString(R.string.symbol_colon, txt)
+    }
+}
+
+@BindingAdapter("formatUpdateTime")
+fun setFormatUpdateTime(
+    textview: AppCompatTextView,
+    updateTime: String?
+) {
+    if (updateTime.isNullOrBlank()) {
+        textview.visibility = View.INVISIBLE
+    } else {
+        val context = textview.context
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
+        val formatDate = format.parse(updateTime)
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val result = formatDate?.let {
+            outputFormat.format(it)
+        } ?: ""
+        textview.visibility = View.VISIBLE
+        textview.text = context.getString(R.string.data_update_time, result)
+    }
+}
+
+@BindingAdapter("formatNullableInt")
+fun setFormatNullableInt(
+    textview: AppCompatTextView,
+    content: Int?
+) {
+    textview.text = content?.toString() ?: ""
+}
+
+@BindingAdapter("stationStatusFavoriteText")
+fun setStationStatusFavoriteText(
+    textview: AppCompatTextView,
+    status: Int?
+) {
+    when (status) {
+        null -> {
+            textview.visibility = View.INVISIBLE
+        }
+
+        else -> {
+            val context = textview.context
+            textview.visibility = View.VISIBLE
+            textview.text = when (getServiceStatusByKey(status)) {
+                ServiceStatus.Stop -> context.getString(R.string.status_stop_with_newline)
+                ServiceStatus.Normal -> context.getString(R.string.status_normal_with_newline)
+                ServiceStatus.Pause -> context.getString(R.string.status_pause_with_newline)
+                else -> context.getString(R.string.status_normal_with_newline)
+            }
+        }
+    }
+}
+
+@BindingAdapter("stationStatusFavoriteIcon")
+fun setStationStatusFavoriteIcon(
+    imageView: AppCompatImageView,
+    status: Int?
+) {
+    when (status) {
+        null -> {
+            imageView.visibility = View.INVISIBLE
+        }
+
+        else -> {
+            imageView.visibility = View.VISIBLE
+            val imageResource = when (getServiceStatusByKey(status)) {
+                ServiceStatus.Normal -> R.drawable.status_ok
+                ServiceStatus.Pause -> R.drawable.status_warn
+                ServiceStatus.Stop -> R.drawable.status_stop
+                else -> R.drawable.status_ok
+            }
+            imageView.setImageResource(imageResource)
+        }
+    }
+}
+
+@BindingAdapter("favoriteStationReturnBikeText")
+fun setFavoriteStationReturnBikeText(
+    textview: AppCompatTextView,
+    returnBike: Int?
+) {
+    val context = textview.context
+    textview.text = context.getString(R.string.available_return, returnBike?.toString() ?: "")
 }

@@ -2,5 +2,6 @@
 <resources>
     <string name="progress" translatable="false">%d%%</string>
     <string name="api_token" translatable="false">Bearer %s</string>
+    <string name="symbol_colon" translatable="false">%s：</string>
     <string name="api_filter_station_uid" translatable="false">StationUID eq \'%s\'</string>
 </resources>
