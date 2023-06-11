@@ -59,20 +59,6 @@ fun setStationBikesText(
     }
 }
 
-@BindingAdapter("stationBikesDetailText")
-fun setStationBikesDetailText(
-    textview: AppCompatTextView,
-    stationDetail: StationDetailResponse.Data?
-) {
-    stationDetail?.let {
-        val context = textview.context
-        val generalBikes = it.availableRentBikesDetail.generalBikes.toString()
-        val electricBikes = it.availableRentBikesDetail.electricBikes.toString()
-        val text = context.getString(R.string.available_rent_detail, electricBikes, generalBikes)
-        textview.text = text
-    }
-}
-
 @BindingAdapter("stationReturnBikeText")
 fun setStationReturnBikeText(
     textview: AppCompatTextView,
@@ -82,18 +68,6 @@ fun setStationReturnBikeText(
         val context = textview.context
         val bikeReturn = it.availableReturnBikes.toString()
         textview.text = context.getString(R.string.available_return, bikeReturn)
-    }
-}
-
-@BindingAdapter("stationUpdateTimeText")
-fun setStationUpdateTimeText(
-    textview: AppCompatTextView,
-    stationDetail: StationDetailResponse.Data?
-) {
-    stationDetail?.let {
-        val context = textview.context
-        val time = it.updateTime
-        textview.text = context.getString(R.string.data_update_time, time)
     }
 }
 
@@ -287,4 +261,48 @@ fun setFavoriteStationReturnBikeText(
 ) {
     val context = textview.context
     textview.text = context.getString(R.string.available_return, returnBike?.toString() ?: "")
+}
+
+@BindingAdapter(
+    value = ["stationType", "normalBikesCount"],
+    requireAll = true
+)
+fun setNormalBikesCount(
+    textview: AppCompatTextView,
+    stationType: Int?,
+    normalBikesCount: Int?
+) {
+    if (stationType != null && normalBikesCount != null) {
+        val context = textview.context
+        val color = when (getServiceTypeByKey(stationType)) {
+            ServiceType.UBike1_0 -> R.color.u_bike_1
+            ServiceType.UBike2_0 -> R.color.u_bike_2
+            ServiceType.TBike -> R.color.t_bike
+            ServiceType.PBike -> R.color.p_bike
+            ServiceType.KBike -> R.color.k_bike
+            else -> R.color.u_bike_2
+        }
+        val txt = when (getServiceTypeByKey(stationType)) {
+            ServiceType.UBike1_0 -> context.getString(R.string.ubike_1)
+            ServiceType.UBike2_0 -> context.getString(R.string.ubike_2)
+            ServiceType.TBike -> context.getString(R.string.tbike)
+            ServiceType.PBike -> context.getString(R.string.pbike)
+            ServiceType.KBike -> context.getString(R.string.kbike)
+            else -> context.getString(R.string.ubike_2)
+        }
+        textview.setTextColor(ContextCompat.getColor(context, color))
+        textview.text = "$txt：$normalBikesCount"
+    }
+}
+
+@BindingAdapter("electricBikesCount")
+fun setElectricBikesCount(
+    textview: AppCompatTextView,
+    electricCount: Int?
+) {
+    electricCount?.let {
+        val context = textview.context
+        val electricTxt = context.getString(R.string.electric_bike)
+        textview.text = "$electricTxt$electricCount"
+    }
 }
