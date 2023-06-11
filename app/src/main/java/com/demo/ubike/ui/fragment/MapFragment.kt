@@ -16,6 +16,8 @@ import androidx.fragment.app.viewModels
 import com.demo.ubike.R
 import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.local.station.StationEntity
+import com.demo.ubike.data.model.CustomMarker
+import com.demo.ubike.data.model.CustomMarkerOption
 import com.demo.ubike.data.viewmodel.HomeViewModel
 import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
@@ -55,8 +57,13 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     private val MIN_TIME: Long = 400
     private val MIN_DISTANCE = 1000f
     private val VISIBLE_ZOOM_LEVEL = 12
-    private val markers: MutableList<MarkerDetail> = mutableListOf()
+
+    private val pendingMarkers: MutableList<CustomMarkerOption> = mutableListOf()
+    private val currentMarkers: MutableList<CustomMarker> = mutableListOf()
     private var selectFromFavorite: FavoriteEntity? = null
+    private val iconCache = hashMapOf<Pair<Int, Boolean>, Bitmap>()
+    private var userIsMoving = false
+    private var lastClickMarker: Marker? = null
 
     override fun getViewModelClass(): Class<MapViewModel> = MapViewModel::class.java
 
@@ -85,47 +92,41 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         viewModel.stations.observe(viewLifecycleOwner) { stations ->
             if (!::map.isInitialized) return@observe
             if (stations == null || stations.isEmpty()) return@observe
-            markers.forEach { marker -> marker.existOnMap = false }
+
+            // 移除不該出現在地圖上的標記
+            val iterator = currentMarkers.iterator()
+            while (iterator.hasNext()) {
+                val current = iterator.next()
+                val find = stations.find { current.id == it.stationUID }
+                if (find == null) {
+                    current.marker.remove()
+                    iterator.remove()
+                }
+            }
+
+            /*
+            * 如果最後一次點擊的marker即將要被移除
+            * 1.將`flStationDetail`內的view全部移除
+            * 2.將`lastClickMarker`還原
+            * */
+            val findLastMarker = stations.find {
+                val tag = lastClickMarker?.tag as? StationEntity
+                tag?.stationUID == it.stationUID
+            }
+            if (findLastMarker == null) {
+                lastClickMarker = null
+                viewDataBinding.flStationDetail.removeAllViews()
+            }
+
+            pendingMarkers.clear()
             stations.forEach { entity ->
-                val target = markers.firstOrNull { it.id == entity.stationUID }
-                if (target == null) {
-                    val pos = LatLng(entity.positionLat, entity.positionLon)
-                    val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(entity, false))
-                    map.addMarker(
-                        MarkerOptions()
-                            .icon(icon)
-                            .position(pos)
-                    )?.also { marker ->
-                        marker.tag = entity
-                        markers.add(
-                            MarkerDetail(
-                                id = entity.stationUID,
-                                marker = marker,
-                                existOnMap = true
-                            )
-                        )
-                    }
-                } else {
-                    target.existOnMap = true
-                }
+                val pos = LatLng(entity.positionLat, entity.positionLon)
+                val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(entity, false))
+                val option = MarkerOptions().icon(icon).position(pos)
+                pendingMarkers.add(CustomMarkerOption(entity.stationUID, option, entity))
             }
 
-            // auto click marker when favorite fragment click some item
-            markers.find {
-                it.id == selectFromFavorite?.stationUID
-            }?.also {
-                onMarkerClick(it.marker)
-                selectFromFavorite = null
-            }
-
-            markers.removeAll { item ->
-                if (item.existOnMap) {
-                    false
-                } else {
-                    item.marker.remove()
-                    true
-                }
-            }
+            startAddMarker()
         }
 
         homeViewModel.favoriteItemClicked.observe(viewLifecycleOwner) {
@@ -136,7 +137,40 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         }
     }
 
+    private fun startAddMarker() {
+        while (pendingMarkers.isNotEmpty() && !userIsMoving) {
+            val first = pendingMarkers.first()
+            val alreadyOnMap = currentMarkers.find { it.id == first.id } != null
+            if (!alreadyOnMap) {
+                map.addMarker(first.markerOptions)?.also {
+                    it.tag = first.stationEntity
+                    currentMarkers.add(CustomMarker(first.stationEntity.stationUID, it))
+                }
+            }
+
+            // auto click marker when favorite fragment click some item
+            selectFromFavorite?.let { favorite ->
+                currentMarkers.find {
+                    it.id == favorite.stationUID
+                }?.also {
+                    onMarkerClick(it.marker)
+                    selectFromFavorite = null
+                }
+            }
+
+            pendingMarkers.removeFirst()
+        }
+    }
+
     private fun getMarkerBitmap(entity: StationEntity, highlight: Boolean): Bitmap {
+        val cache = iconCache[Pair(entity.serviceType, highlight)]
+        /*
+        * 產生Bitmap目前只需要`entity.serviceType`加上`highlight`變數
+        * `serviceType`只有5種可能，`highlight`有2種可能
+        * 因所有組合不多，所以將產生過的icon存起來，如果有就直接回傳使用:)
+        * */
+        if (cache != null) return cache
+
         val view = MarkerView(
             context = requireContext(),
             stationEntity = entity,
@@ -145,7 +179,9 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         val iconGenerator = IconGenerator(requireContext())
         iconGenerator.setContentView(view)
         iconGenerator.setBackground(null)
-        return iconGenerator.makeIcon()
+        val result = iconGenerator.makeIcon()
+        iconCache[Pair(entity.serviceType, highlight)] = result
+        return result
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -174,8 +210,9 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         if (tag != null && detailView == null) {
             val highlightIcon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, true))
             marker.setIcon(highlightIcon)
+
             restoreLastMarker()
-            markers.firstOrNull { it.id == tag.stationUID }?.isLastClick = true
+            lastClickMarker = marker
 
             val customView = StationDetailView(
                 context = requireContext(),
@@ -196,6 +233,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
 
     override fun onCameraIdle() {
+        userIsMoving = false
         val zoom = map.cameraPosition.zoom
         val target = map.cameraPosition.target
         val latitude = target.latitude
@@ -204,13 +242,17 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             viewModel.getStations(latitude, longitude)
         } else {
             map.clear()
-            markers.clear()
-            markers.forEach { it.isLastClick = false }
+            pendingMarkers.clear()
+            currentMarkers.clear()
+            lastClickMarker = null
             viewDataBinding.flStationDetail.removeAllViews()
         }
+
+        startAddMarker()
     }
 
     override fun onCameraMove() {
+        userIsMoving = true
         viewModel.cancelGetStations()
     }
 
@@ -224,15 +266,15 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     }
 
     private fun restoreLastMarker() {
-        val target = markers.firstOrNull { it.isLastClick }
+        val lastMarkerUid = (lastClickMarker?.tag as? StationEntity)?.stationUID
+        val target = currentMarkers.firstOrNull { it.id == lastMarkerUid }
         target?.apply {
-            val marker = this.marker
-            val tag = marker.tag as? StationEntity
+            val tag = this.marker.tag as? StationEntity
             tag?.let {
                 val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, false))
-                marker.setIcon(icon)
+                this.marker.setIcon(icon)
             }
-            this.isLastClick = false
+            lastClickMarker = null
         }
     }
 
@@ -280,11 +322,4 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         // 禁止旋轉地圖
         map.uiSettings.isRotateGesturesEnabled = false
     }
-
-    data class MarkerDetail(
-        var id: String,
-        var marker: Marker,
-        var existOnMap: Boolean,
-        var isLastClick: Boolean = false
-    )
 }

@@ -64,7 +64,6 @@ class FavoriteViewModel @Inject constructor(
 
     fun fetchStationDetail(city: City, stationUid: String) {
         fetchStationDetailUseCase.byStationUid(city, stationUid)
-            .delay(5, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

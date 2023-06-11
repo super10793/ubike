@@ -58,7 +58,6 @@ class MapViewModel @Inject constructor(
 
     fun getStations(lat: Double, lon: Double) {
         disposable = getStationsUseCase(lat, lon)
-            .delay(400, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
