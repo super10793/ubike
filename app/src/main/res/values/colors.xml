@@ -16,4 +16,6 @@
     <color name="status_stop">#FF0000</color>
     <color name="status_pause">#9D9D9D</color>
     <color name="toast_bg">#70000000</color>
+    <color name="bottom_item_n">#9D9D9D</color>
+    <color name="bottom_item_h">#FF8000</color>
 </resources>
