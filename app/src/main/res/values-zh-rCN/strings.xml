@@ -37,4 +37,6 @@
     <string name="city_tainan">台南市</string>
     <string name="city_pingtungCounty">屏东县</string>
     <string name="city_kinmenCounty">金门县</string>
+    <string name="added_to_favorite">已加入最爱</string>
+    <string name="remove_from_favorite">已移除最爱</string>
 </resources>

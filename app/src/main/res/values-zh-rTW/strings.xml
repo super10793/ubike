@@ -37,4 +37,6 @@
     <string name="city_tainan">台南市</string>
     <string name="city_pingtungCounty">屏東縣</string>
     <string name="city_kinmenCounty">金門縣</string>
+    <string name="added_to_favorite">已加入最愛</string>
+    <string name="remove_from_favorite">已移除最愛</string>
 </resources>

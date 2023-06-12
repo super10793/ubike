@@ -4,22 +4,27 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.LayoutInflater
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.findViewTreeViewModelStoreOwner
+import com.blankj.utilcode.util.ToastUtils
+import com.demo.ubike.R
 import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.local.station.StationEntity
 import com.demo.ubike.data.model.StationDetailResponse
 import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.ViewStationDetailBinding
+import com.demo.ubike.extension.view.dpToPx
 import com.demo.ubike.extension.view.removeFromParent
 import com.demo.ubike.utils.EventObserver
 
 @SuppressLint("ViewConstructor")
 class StationDetailView @JvmOverloads constructor(
-    context: Context,
+    private val context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     private val station: StationEntity,
@@ -75,7 +80,11 @@ class StationDetailView @JvmOverloads constructor(
 
         binding.ivFavorite.setOnClickListener {
             when (binding.isFavorite) {
-                true -> viewModel.removeFavorite(station.stationUID)
+                true -> {
+                    viewModel.removeFavorite(station.stationUID)
+                    showToast(context.getString(R.string.remove_from_favorite))
+                }
+
                 else -> {
                     val entity = FavoriteEntity(
                         stationUID = station.stationUID,
@@ -92,6 +101,7 @@ class StationDetailView @JvmOverloads constructor(
                         stationAddressEn = station.stationAddressEn,
                     )
                     viewModel.addFavorite(entity)
+                    showToast(context.getString(R.string.added_to_favorite))
                 }
             }
         }
@@ -107,5 +117,15 @@ class StationDetailView @JvmOverloads constructor(
             findViewTreeLifecycleOwner()!!,
             stationDetailObserver
         )
+    }
+
+    private fun showToast(content: String) {
+        ToastUtils.cancel()
+        ToastUtils.make()
+            .setBgColor(ContextCompat.getColor(context, R.color.toast_bg))
+            .setTextColor(ContextCompat.getColor(context, R.color.white))
+            .setGravity(Gravity.BOTTOM, 0, context.dpToPx(60))
+            .setDurationIsLong(false)
+            .show(content)
     }
 }

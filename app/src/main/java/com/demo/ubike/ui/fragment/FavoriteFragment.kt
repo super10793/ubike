@@ -1,15 +1,19 @@
 package com.demo.ubike.ui.fragment
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blankj.utilcode.util.ToastUtils
 import com.demo.ubike.R
 import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.viewmodel.FavoriteViewModel
 import com.demo.ubike.data.viewmodel.HomeViewModel
 import com.demo.ubike.databinding.FragmentFavoriteBinding
+import com.demo.ubike.extension.view.dpToPx
 import com.demo.ubike.utils.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -69,6 +73,7 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
     }
 
     override fun onFavoriteRemoveClick(stationUid: String) {
+        showToast(requireContext().getString(R.string.remove_from_favorite))
         viewModel.removeFavorite(stationUid)
     }
 
@@ -81,5 +86,15 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
         adapter?.setOnItemClickListener(this)
         viewDataBinding.rvList.layoutManager = LinearLayoutManager(context)
         viewDataBinding.rvList.adapter = adapter
+    }
+
+    private fun showToast(content: String) {
+        ToastUtils.cancel()
+        ToastUtils.make()
+            .setBgColor(ContextCompat.getColor(requireContext(), R.color.toast_bg))
+            .setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            .setGravity(Gravity.BOTTOM, 0, requireContext().dpToPx(60))
+            .setDurationIsLong(false)
+            .show(content)
     }
 }
