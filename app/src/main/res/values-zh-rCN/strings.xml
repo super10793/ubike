@@ -25,4 +25,16 @@
     <string name="status_normal_with_newline">正常\n营运</string>
     <string name="status_stop_with_newline">停止\n营运</string>
     <string name="status_pause_with_newline">暂停\n营运</string>
+    <string name="city_taipei">台北市</string>
+    <string name="city_newTaipei">新北市</string>
+    <string name="city_taoyuan">桃园市</string>
+    <string name="city_hsinchu">新竹市</string>
+    <string name="city_hsinchuCounty">新竹县</string>
+    <string name="city_miaoliCounty">苗栗县</string>
+    <string name="city_taichung">台中市</string>
+    <string name="city_chiayi">嘉义市</string>
+    <string name="city_kaohsiung">高雄市</string>
+    <string name="city_tainan">台南市</string>
+    <string name="city_pingtungCounty">屏东县</string>
+    <string name="city_kinmenCounty">金门县</string>
 </resources>

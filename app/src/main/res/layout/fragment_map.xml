@@ -24,6 +24,36 @@
             android:layout_height="match_parent" />
 
         <FrameLayout
+            android:id="@+id/fl_search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"
+            android:background="@drawable/search_btn_bg"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_search"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/search"
+                android:tint="#7B7B7B"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_support_city"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="3dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/fl_search"
+            app:layout_constraintTop_toTopOf="@id/fl_search" />
+
+        <FrameLayout
             android:id="@+id/fl_station_detail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

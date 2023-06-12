@@ -9,6 +9,8 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.widget.RelativeLayout
 import androidx.databinding.library.baseAdapters.BR
@@ -25,6 +27,7 @@ import com.demo.ubike.extension.permission.PermissionCallback
 import com.demo.ubike.ui.view.MarkerView
 import com.demo.ubike.ui.view.OnStationDetailListener
 import com.demo.ubike.ui.view.StationDetailView
+import com.demo.ubike.ui.view.SupportCityView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
@@ -57,6 +60,9 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     private val MIN_TIME: Long = 400
     private val MIN_DISTANCE = 1000f
     private val VISIBLE_ZOOM_LEVEL = 12
+    private val CAMERA_ZOOM_LEVEL = 15f
+    private val CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN = 8.1f
+    private val TAIWAN_LATLNG: LatLng = LatLng(23.617133617023338, 121.0056421905756)
 
     private val pendingMarkers: MutableList<CustomMarkerOption> = mutableListOf()
     private val currentMarkers: MutableList<CustomMarker> = mutableListOf()
@@ -79,6 +85,13 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         mapFragment.getMapAsync(this)
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         viewModel.fetchAllStationAndInsert()
+
+        viewDataBinding.flSearch.setOnClickListener {
+            val count = viewDataBinding.flSupportCity.childCount
+            val expandIt = (count == 0)
+            onSearchBtnClick(expandIt)
+
+        }
     }
 
     override fun onPause() {
@@ -86,6 +99,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         restoreLastMarker()
         viewDataBinding.flStationDetail.removeAllViews()
         selectFromFavorite = null
+        onSearchBtnClick(false)
     }
 
     override fun initObserver() {
@@ -132,7 +146,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         homeViewModel.favoriteItemClicked.observe(viewLifecycleOwner) {
             selectFromFavorite = it
             val latLng = LatLng(it.positionLat, it.positionLon)
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16f)
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, CAMERA_ZOOM_LEVEL)
             map.moveCamera(cameraUpdate)
         }
     }
@@ -196,7 +210,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override fun onLocationChanged(location: Location) {
         val latLng = LatLng(location.latitude, location.longitude)
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16f)
+        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, CAMERA_ZOOM_LEVEL)
         map.moveCamera(cameraUpdate)
         map.isMyLocationEnabled = true
         locationManager.removeUpdates(this)
@@ -297,8 +311,13 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                 }
 
                 override fun onPermissionDenied(perms: MutableList<String>) {
-                    val sydney = LatLng(-34.0, 151.0)
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 16f))
+                    map.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            TAIWAN_LATLNG,
+                            CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN
+                        )
+                    )
+                    onSearchBtnClick(true)
                 }
             }
         )
@@ -321,5 +340,46 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
         // 禁止旋轉地圖
         map.uiSettings.isRotateGesturesEnabled = false
+    }
+
+    private fun onSearchBtnClick(isExpand: Boolean) {
+        if (isExpand) {
+            // set icon
+            viewDataBinding.ivSearch.setImageResource(R.drawable.close)
+
+            // add view
+            val customView = SupportCityView(requireContext()) {
+                val cameraUpdate =
+                    CameraUpdateFactory.newLatLngZoom(it.cityCenter, CAMERA_ZOOM_LEVEL)
+                map.moveCamera(cameraUpdate)
+            }
+            val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.expand_search)
+            viewDataBinding.flSupportCity.addView(customView)
+            customView.startAnimation(anim)
+        } else {
+            // set icon
+            viewDataBinding.ivSearch.setImageResource(R.drawable.search)
+
+            // remove view
+            val child = viewDataBinding.flSupportCity.getChildAt(0)
+            child?.let {
+                val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.collapse_search)
+                anim.setAnimationListener(object : AnimationListener {
+                    override fun onAnimationStart(animation: Animation?) {
+                        // nothing
+                    }
+
+                    override fun onAnimationEnd(animation: Animation?) {
+                        viewDataBinding.flSupportCity.removeView(it)
+                    }
+
+                    override fun onAnimationRepeat(animation: Animation?) {
+                        // nothing
+                    }
+                })
+                it.startAnimation(anim)
+            }
+
+        }
     }
 }

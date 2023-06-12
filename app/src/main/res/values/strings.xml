@@ -25,6 +25,18 @@
     <string name="status_normal_with_newline">正常\n營運</string>
     <string name="status_stop_with_newline">停止\n營運</string>
     <string name="status_pause_with_newline">暫停\n營運</string>
+    <string name="city_taipei">台北市</string>
+    <string name="city_newTaipei">新北市</string>
+    <string name="city_taoyuan">桃園市</string>
+    <string name="city_hsinchu">新竹市</string>
+    <string name="city_hsinchuCounty">新竹縣</string>
+    <string name="city_miaoliCounty">苗栗縣</string>
+    <string name="city_taichung">台中市</string>
+    <string name="city_chiayi">嘉義市</string>
+    <string name="city_kaohsiung">高雄市</string>
+    <string name="city_tainan">台南市</string>
+    <string name="city_pingtungCounty">屏東縣</string>
+    <string name="city_kinmenCounty">金門縣</string>
 
     <!-- translatable = false -->
     <string name="api_fail" translatable="false">api error，%s</string>
