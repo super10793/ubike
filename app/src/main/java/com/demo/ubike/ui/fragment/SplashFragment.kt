@@ -22,25 +22,12 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
         get() = BR.splashViewModel
 
     override fun initObserver() {
-        viewModel.progressComplete.observe(viewLifecycleOwner) {
-            if (it) {
-                findNavController().navigate(R.id.homeFragment)
-            }
-        }
-
-        viewModel.progress.observe(
-            viewLifecycleOwner
-        ) {
-            viewDataBinding.tvProgress.text = getString(R.string.progress, it)
-            viewDataBinding.progressbar.progress = it
-        }
-
         viewModel.fetchTokenResult.observe(
             viewLifecycleOwner
         ) {
             when (it) {
                 is ApiResult.Success<*> -> {
-                    viewModel.startProgress()
+                    findNavController().navigate(R.id.homeFragment)
                 }
 
                 is ApiResult.Fail -> {
@@ -55,7 +42,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
                                 errorMsg
                             )
                         )
-                        .setConfirmClickListener { initView() }
+                        .setConfirmClickListener {
+                            viewModel.fetchToken()
+                        }
                         .build()
                     dialog.show()
                 }
@@ -65,13 +54,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
-    }
-
-    private fun initView() {
-        viewDataBinding.tvProgress.text = getString(R.string.progress, 0)
-        viewDataBinding.progressbar.progress = 0
-        viewModel.resetProgress()
         viewModel.fetchToken()
     }
 }
