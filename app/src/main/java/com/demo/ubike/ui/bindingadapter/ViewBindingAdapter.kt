@@ -306,3 +306,11 @@ fun setElectricBikesCount(
         textview.text = "$electricTxt$electricCount"
     }
 }
+
+@BindingAdapter("visibleByContentValid")
+fun setVisibleByContentValid(
+    textview: AppCompatTextView,
+    content: String?
+) {
+    textview.visibility = if (content.isNullOrBlank()) View.GONE else View.VISIBLE
+}

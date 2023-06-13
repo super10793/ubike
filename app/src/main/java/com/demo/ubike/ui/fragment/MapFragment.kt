@@ -13,6 +13,7 @@ import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.viewModels
 import com.demo.ubike.R
@@ -24,6 +25,7 @@ import com.demo.ubike.data.viewmodel.HomeViewModel
 import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
 import com.demo.ubike.extension.permission.PermissionCallback
+import com.demo.ubike.extension.view.getStatusBarHeight
 import com.demo.ubike.ui.view.MarkerView
 import com.demo.ubike.ui.view.OnStationDetailListener
 import com.demo.ubike.ui.view.StationDetailView
@@ -85,13 +87,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         mapFragment.getMapAsync(this)
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         viewModel.fetchAllStationAndInsert()
-
-        viewDataBinding.flSearch.setOnClickListener {
-            val count = viewDataBinding.flSupportCity.childCount
-            val expandIt = (count == 0)
-            onSearchBtnClick(expandIt)
-
-        }
+        initSearchButton()
     }
 
     override fun onPause() {
@@ -340,6 +336,26 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
         // 禁止旋轉地圖
         map.uiSettings.isRotateGesturesEnabled = false
+    }
+
+    private fun initSearchButton() {
+        // set margin
+        val layoutParams = viewDataBinding.flSearch.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.setMargins(
+            layoutParams.marginStart,
+            requireActivity().getStatusBarHeight() ?: 120,
+            layoutParams.rightMargin,
+            layoutParams.bottomMargin
+        )
+        viewDataBinding.flSearch.layoutParams = layoutParams
+
+
+        // set listener
+        viewDataBinding.flSearch.setOnClickListener {
+            val count = viewDataBinding.flSupportCity.childCount
+            val expandIt = (count == 0)
+            onSearchBtnClick(expandIt)
+        }
     }
 
     private fun onSearchBtnClick(isExpand: Boolean) {

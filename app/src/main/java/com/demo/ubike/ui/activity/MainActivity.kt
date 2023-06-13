@@ -1,7 +1,10 @@
 package com.demo.ubike.ui.activity
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.core.view.WindowCompat
 import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -24,6 +27,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         // 不進入休眠
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         initObserver()
+
+        // statusBar、navigationBar 透明
+        val rootView = viewDataBinding.root
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
+        WindowCompat.getInsetsController(window, rootView).isAppearanceLightStatusBars = true
+        WindowCompat.getInsetsController(window, rootView).isAppearanceLightNavigationBars = true
     }
 
     private fun initObserver() {

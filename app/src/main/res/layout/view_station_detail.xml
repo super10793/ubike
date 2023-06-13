@@ -28,7 +28,7 @@
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="true"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="#FFFCEC"
         app:cardCornerRadius="20dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -74,11 +74,12 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="10dp"
+                android:text="@{stationEntity.stationAddressZhTw}"
                 android:textColor="#6C6C6C"
-                app:formatStationName="@{stationEntity.stationAddressZhTw}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tv_title"
                 app:layout_constraintTop_toBottomOf="@id/tv_title"
+                app:visibleByContentValid="@{stationEntity.stationAddressZhTw}"
                 tools:text="捷運科技大樓站捷運科技大樓站捷運科技大樓站捷運科技大" />
 
             <View
@@ -87,7 +88,7 @@
                 android:layout_height="1dp"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginTop="10dp"
-                android:background="#F5F5F5"
+                android:background="#E0E0E0"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_address" />
@@ -176,7 +177,7 @@
                 android:layout_height="1dp"
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginTop="10dp"
-                android:background="#F5F5F5"
+                android:background="#E0E0E0"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_bike_detail" />
