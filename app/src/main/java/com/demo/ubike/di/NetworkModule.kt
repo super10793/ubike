@@ -2,12 +2,11 @@ package com.demo.ubike.di
 
 import com.demo.ubike.Config
 import com.demo.ubike.data.api.HomeApi
-import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
-import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -30,10 +29,11 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(networkFlipperPlugin: NetworkFlipperPlugin): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addNetworkInterceptor(FlipperOkhttpInterceptor(networkFlipperPlugin))
-            .build()
+    fun provideOkHttpClient(@FlipperInterceptor flipperInterceptor: Interceptor?): OkHttpClient {
+        return OkHttpClient.Builder().run {
+            flipperInterceptor?.let { this.addNetworkInterceptor(it) }
+            this.build()
+        }
     }
 
     @Singleton

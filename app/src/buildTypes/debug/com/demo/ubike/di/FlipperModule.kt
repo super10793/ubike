@@ -6,6 +6,7 @@ import com.facebook.flipper.plugins.crashreporter.CrashReporterPlugin
 import com.facebook.flipper.plugins.databases.DatabasesFlipperPlugin
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import dagger.Module
@@ -13,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import javax.inject.Singleton
 
 @Module
@@ -53,6 +55,13 @@ object FlipperModule {
     @Provides
     fun provideNetworkFlipperPlugin(): NetworkFlipperPlugin {
         return NetworkFlipperPlugin()
+    }
+
+    @Singleton
+    @Provides
+    @FlipperInterceptor
+    fun provideFlipperInterceptor(networkFlipperPlugin: NetworkFlipperPlugin): Interceptor {
+        return FlipperOkhttpInterceptor(networkFlipperPlugin)
     }
 
     @Singleton

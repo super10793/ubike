@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ubike</string>
+    <string name="app_name_debug">ubike debug</string>
     <string name="bottom_map_title">地圖</string>
     <string name="bottom_favorite_title">最愛</string>
     <string name="status_normal">正常營運</string>
