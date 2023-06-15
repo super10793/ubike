@@ -23,6 +23,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "API_CLIENT_ID", secretsProperties['API_CLIENT_ID']
+        buildConfigField "String", "API_CLIENT_SECRET", secretsProperties['API_CLIENT_SECRET']
         manifestPlaceholders = [
                 "mapsApiKey": secretsProperties.getProperty("MAPS_API_KEY")
         ]
