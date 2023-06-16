@@ -15,6 +15,7 @@ import com.demo.ubike.data.model.ServiceType
 import com.demo.ubike.data.model.getServiceTypeByKey
 import com.demo.ubike.databinding.ViewMarkerBinding
 import com.demo.ubike.extension.view.dpToPx
+import com.demo.ubike.extension.view.visible
 
 @SuppressLint("ViewConstructor")
 class MarkerView @JvmOverloads constructor(
@@ -66,6 +67,6 @@ class MarkerView @JvmOverloads constructor(
         binding.ivCircle.layoutParams = circleLayoutParams
 
         // light
-        binding.ivLight.visibility = View.VISIBLE
+        binding.ivLight.visible()
     }
 }

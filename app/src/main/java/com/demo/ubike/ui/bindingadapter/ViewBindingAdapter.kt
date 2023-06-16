@@ -11,6 +11,8 @@ import com.demo.ubike.data.model.ServiceType
 import com.demo.ubike.data.model.StationDetailResponse
 import com.demo.ubike.data.model.getServiceStatusByKey
 import com.demo.ubike.data.model.getServiceTypeByKey
+import com.demo.ubike.extension.view.invisible
+import com.demo.ubike.extension.view.visible
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -21,7 +23,7 @@ fun setStationStatusText(
 ) {
     when (stationStatus) {
         null -> {
-            textview.visibility = View.INVISIBLE
+            textview.invisible()
         }
 
         else -> {
@@ -39,7 +41,7 @@ fun setStationStatusText(
                 else -> R.color.status_normal
             }
 
-            textview.visibility = View.VISIBLE
+            textview.visible()
             textview.text = text
             textview.setTextColor(ContextCompat.getColor(context, color))
         }
@@ -78,11 +80,11 @@ fun setStatusLight(
 ) {
     when (stationStatus) {
         null -> {
-            imageView.visibility = View.INVISIBLE
+            imageView.invisible()
         }
 
         else -> {
-            imageView.visibility = View.VISIBLE
+            imageView.visible()
             val imageResource = when (getServiceStatusByKey(stationStatus)) {
                 ServiceStatus.Normal -> R.drawable.status_normal_circle
                 ServiceStatus.Pause -> R.drawable.status_pause_circle
@@ -186,7 +188,7 @@ fun setFormatUpdateTime(
     updateTime: String?
 ) {
     if (updateTime.isNullOrBlank()) {
-        textview.visibility = View.INVISIBLE
+        textview.invisible()
     } else {
         val context = textview.context
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
@@ -195,7 +197,7 @@ fun setFormatUpdateTime(
         val result = formatDate?.let {
             outputFormat.format(it)
         } ?: ""
-        textview.visibility = View.VISIBLE
+        textview.visible()
         textview.text = context.getString(R.string.data_update_time, result)
     }
 }
@@ -215,12 +217,12 @@ fun setStationStatusFavoriteText(
 ) {
     when (status) {
         null -> {
-            textview.visibility = View.INVISIBLE
+            textview.invisible()
         }
 
         else -> {
             val context = textview.context
-            textview.visibility = View.VISIBLE
+            textview.visible()
             textview.text = when (getServiceStatusByKey(status)) {
                 ServiceStatus.Stop -> context.getString(R.string.status_stop_with_newline)
                 ServiceStatus.Normal -> context.getString(R.string.status_normal_with_newline)
@@ -238,11 +240,11 @@ fun setStationStatusFavoriteIcon(
 ) {
     when (status) {
         null -> {
-            imageView.visibility = View.INVISIBLE
+            imageView.invisible()
         }
 
         else -> {
-            imageView.visibility = View.VISIBLE
+            imageView.visible()
             val imageResource = when (getServiceStatusByKey(status)) {
                 ServiceStatus.Normal -> R.drawable.status_ok
                 ServiceStatus.Pause -> R.drawable.status_warn

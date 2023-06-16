@@ -15,6 +15,8 @@ import com.demo.ubike.data.viewmodel.HomeViewModel
 import com.demo.ubike.databinding.FragmentFavoriteBinding
 import com.demo.ubike.extension.view.dpToPx
 import com.demo.ubike.extension.view.getStatusBarHeight
+import com.demo.ubike.extension.view.gone
+import com.demo.ubike.extension.view.visible
 import com.demo.ubike.utils.EventObserver
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,11 +51,11 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
         viewModel.favoriteList.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 adapter?.submitList(it)
-                viewDataBinding.clResultEmpty.visibility = View.GONE
-                viewDataBinding.rvList.visibility = View.VISIBLE
+                viewDataBinding.clResultEmpty.gone()
+                viewDataBinding.rvList.visible()
             } else {
-                viewDataBinding.clResultEmpty.visibility = View.VISIBLE
-                viewDataBinding.rvList.visibility = View.GONE
+                viewDataBinding.clResultEmpty.visible()
+                viewDataBinding.rvList.gone()
             }
         }
 

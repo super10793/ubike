@@ -11,6 +11,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.demo.ubike.R
 import com.demo.ubike.databinding.DialogExceptionBinding
+import com.demo.ubike.extension.view.gone
+import com.demo.ubike.extension.view.visible
 
 class ExceptionDialog private constructor() : DialogFragment() {
 
@@ -73,10 +75,10 @@ class ExceptionDialog private constructor() : DialogFragment() {
             dismissAllowingStateLoss()
         }
         if (isOneButton) {
-            binding.btnCancel.visibility = View.GONE
+            binding.btnCancel.gone()
         } else {
             binding.btnCancel.text = btnCancelTxt
-            binding.btnCancel.visibility = View.VISIBLE
+            binding.btnCancel.visible()
             binding.btnCancel.setOnClickListener {
                 onButtonCancelClick?.invoke()
                 dismissAllowingStateLoss()

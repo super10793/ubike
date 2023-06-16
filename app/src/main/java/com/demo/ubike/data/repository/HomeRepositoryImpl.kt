@@ -153,10 +153,10 @@ class HomeRepositoryImpl @Inject constructor(
     }
 
     override fun getStationsByLocation(lat: Double, lon: Double): Observable<List<StationEntity>> {
-        val maxLat = lat + 0.02
-        val minLat = lat - 0.02
-        val maxLon = lon + 0.017
-        val minLon = lon - 0.017
+        val maxLat = lat + Config.VISIBLE_DISTANCE_LAT
+        val minLat = lat - Config.VISIBLE_DISTANCE_LAT
+        val maxLon = lon + Config.VISIBLE_DISTANCE_LON
+        val minLon = lon - Config.VISIBLE_DISTANCE_LON
         return stationDao.getStationsByLocation(maxLat, minLat, maxLon, minLon)
     }
 
