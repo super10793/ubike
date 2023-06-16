@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "370565345468",
+    "project_id": "ubike-f7515",
+    "storage_bucket": "ubike-f7515.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370565345468:android:c39b1d9b33353b58f7e0b9",
+        "android_client_info": {
+          "package_name": "com.demo.ubike"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370565345468-nbq5g1pi4sabr3399uqc54e7t61gal91.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChPpNjSRr-1vDFq_JfzbojTtvm45mZoG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370565345468-nbq5g1pi4sabr3399uqc54e7t61gal91.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370565345468:android:789b26d3026ed4a7f7e0b9",
+        "android_client_info": {
+          "package_name": "com.demo.ubike.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370565345468-nbq5g1pi4sabr3399uqc54e7t61gal91.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChPpNjSRr-1vDFq_JfzbojTtvm45mZoG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370565345468-nbq5g1pi4sabr3399uqc54e7t61gal91.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
