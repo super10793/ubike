@@ -3,11 +3,14 @@ package com.demo.ubike.ui.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
@@ -88,6 +91,22 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         viewModel.fetchAllStationAndInsert()
         initSearchButton()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val isMapOk = this::map.isInitialized
+        when {
+            isMapOk && hasAnyLocationPermissions() -> {
+                map.isMyLocationEnabled = true
+            }
+
+            isMapOk && !hasAnyLocationPermissions() -> {
+                map.isMyLocationEnabled = false
+            }
+
+            else -> {}
+        }
     }
 
     override fun onPause() {
@@ -364,11 +383,20 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             viewDataBinding.ivSearch.setImageResource(R.drawable.close)
 
             // add view
-            val customView = SupportCityView(requireContext()) {
-                val cameraUpdate =
-                    CameraUpdateFactory.newLatLngZoom(it.cityCenter, CAMERA_ZOOM_LEVEL)
-                map.moveCamera(cameraUpdate)
-            }
+            val customView = SupportCityView(
+                context = requireContext(),
+                hasFullLocationPermission = hasFullLocationPermissions(),
+                onCityClick = {
+                    val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                        it.cityCenter,
+                        CAMERA_ZOOM_LEVEL
+                    )
+                    map.moveCamera(cameraUpdate)
+                },
+                onGoToSettingClick = {
+                    gotToAndroidSettings()
+                }
+            )
             val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.expand_search)
             viewDataBinding.flSupportCity.addView(customView)
             customView.startAnimation(anim)
@@ -395,7 +423,13 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                 })
                 it.startAnimation(anim)
             }
-
         }
+    }
+
+    private fun gotToAndroidSettings() {
+        val uri = Uri.parse("package:${requireContext().packageName}")
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        requireContext().startActivity(intent)
     }
 }

@@ -7,13 +7,16 @@ import android.view.LayoutInflater
 import android.widget.GridLayout
 import com.demo.ubike.data.model.City
 import com.demo.ubike.databinding.ViewSupportCityBinding
+import com.demo.ubike.extension.view.visibleIf
 
 @SuppressLint("ViewConstructor")
 class SupportCityView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    private val onCityClick: ((city: City) -> Unit)
+    private val hasFullLocationPermission: Boolean,
+    private val onCityClick: ((city: City) -> Unit),
+    private val onGoToSettingClick: (() -> Unit)
 ) : GridLayout(context, attrs, defStyleAttr) {
     private val binding: ViewSupportCityBinding = ViewSupportCityBinding.inflate(
         LayoutInflater.from(context),
@@ -23,6 +26,7 @@ class SupportCityView @JvmOverloads constructor(
 
     init {
         initListener()
+        initView()
     }
 
     private fun initListener() {
@@ -38,5 +42,10 @@ class SupportCityView @JvmOverloads constructor(
         binding.btnTainan.setOnClickListener { onCityClick(City.Tainan) }
         binding.btnPingtungCounty.setOnClickListener { onCityClick(City.Pingtung) }
         binding.btnKinmenCounty.setOnClickListener { onCityClick(City.Kinmen) }
+        binding.btnGivePermission.setOnClickListener { onGoToSettingClick() }
+    }
+
+    private fun initView() {
+        binding.btnGivePermission visibleIf !hasFullLocationPermission
     }
 }

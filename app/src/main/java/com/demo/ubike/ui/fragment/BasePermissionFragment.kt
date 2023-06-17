@@ -1,5 +1,6 @@
 package com.demo.ubike.ui.fragment
 
+import android.Manifest
 import androidx.databinding.ViewDataBinding
 import com.demo.ubike.R
 import com.demo.ubike.data.viewmodel.BaseViewModel
@@ -37,6 +38,18 @@ abstract class BasePermissionFragment<T : ViewDataBinding, V : BaseViewModel> :
 
     protected fun hasPermissions(vararg permissions: String): Boolean {
         return EasyPermissions.hasPermissions(requireContext(), *permissions)
+    }
+
+    protected fun hasAnyLocationPermissions(): Boolean {
+        val hasFindLocation = hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        val hasCoarseLocation = hasPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+        return hasFindLocation || hasCoarseLocation
+    }
+
+    protected fun hasFullLocationPermissions(): Boolean {
+        val hasFindLocation = hasPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        val hasCoarseLocation = hasPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+        return hasFindLocation && hasCoarseLocation
     }
 
     @Suppress("DEPRECATION")
