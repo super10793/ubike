@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
@@ -35,16 +33,9 @@ class ExceptionDialog private constructor() : DialogFragment() {
     private var onButtonCancelClick: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        val window = dialog.window
-        window?.requestFeature(Window.FEATURE_NO_TITLE)
-        window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        setStyle(STYLE_NORMAL, android.R.style.Theme_Light_NoTitleBar_Fullscreen)
-        isCancelable = false
         super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.DialogFullScreen)
+        isCancelable = false
     }
 
     override fun onCreateView(
