@@ -14,6 +14,8 @@
     <string name="default_dialog_title">訊息</string>
     <string name="submit">確定</string>
     <string name="cancel">取消</string>
+    <string name="setting">設置</string>
+    <string name="location_permission_hint">允許app使用位置權限，可更快找出附近站點：）</string>
     <string name="error00001">token失效，點擊確定按鈕重新拿取。%s</string>
     <string name="error00002">錯誤代碼：00002\n網路不穩定，確認看看網路是否正常。%s</string>
     <string name="error00003">錯誤代碼：00003\n網路不穩定，確認看看網路是否正常。%s</string>

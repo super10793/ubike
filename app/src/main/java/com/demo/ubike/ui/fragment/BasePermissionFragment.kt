@@ -1,9 +1,11 @@
 package com.demo.ubike.ui.fragment
 
 import androidx.databinding.ViewDataBinding
+import com.demo.ubike.R
 import com.demo.ubike.data.viewmodel.BaseViewModel
 import com.demo.ubike.extension.permission.PermissionCallback
 import pub.devrel.easypermissions.EasyPermissions
+import pub.devrel.easypermissions.PermissionRequest
 
 abstract class BasePermissionFragment<T : ViewDataBinding, V : BaseViewModel> :
     BaseFragment<T, V>(), EasyPermissions.PermissionCallbacks {
@@ -22,12 +24,14 @@ abstract class BasePermissionFragment<T : ViewDataBinding, V : BaseViewModel> :
         if (hasPermissions(*permissions)) {
             onPermissionsGranted(requestCode, mutableListOf(*permissions))
         } else {
-            EasyPermissions.requestPermissions(
-                this,
-                rationale ?: "",
-                requestCode,
-                *permissions
-            )
+            val request = PermissionRequest.Builder(this, requestCode, *permissions)
+                .setRationale(R.string.location_permission_hint)
+                .setPositiveButtonText(R.string.setting)
+                .setNegativeButtonText(R.string.cancel)
+                .setTheme(android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
+                .build()
+
+            EasyPermissions.requestPermissions(request)
         }
     }
 
