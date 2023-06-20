@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.demo.ubike.R
 import com.demo.ubike.data.model.Error
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.exceptions.CompositeException
@@ -34,6 +35,7 @@ class MainViewModel @Inject constructor(
             var error: Pair<Error, String>? = null
             if (it is CompositeException) {
                 it.exceptions.forEach { e ->
+                    FirebaseCrashlytics.getInstance().recordException(e)
                     error = when (e) {
                         is HttpException -> {
                             if (e.message?.contains("HTTP 401 Unauthorized") == true) {

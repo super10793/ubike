@@ -95,7 +95,7 @@ class FavoriteAdapter(
         val data = asyncListDiffer.currentList[position]
         holder.bind(data, favoriteViewModel)
         holder.binding.ivFavorite.setOnClickListener {
-            itemClickListener?.onFavoriteRemoveClick(data.stationUID)
+            itemClickListener?.onFavoriteRemoveClick(data.stationUID, data.stationNameZhTw)
         }
 
         holder.binding.cardContent.setOnClickListener {

@@ -18,7 +18,9 @@ import com.demo.ubike.extension.view.getStatusBarHeight
 import com.demo.ubike.extension.view.gone
 import com.demo.ubike.extension.view.visible
 import com.demo.ubike.utils.EventObserver
+import com.demo.ubike.utils.FirebaseAnalyticsUtil
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel>(),
@@ -33,6 +35,9 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
     override fun layoutId(): Int = R.layout.fragment_favorite
 
     override val bindingVariable: Int = BR.favoriteViewModel
+
+    @Inject
+    lateinit var firebaseAnalyticsUtil: FirebaseAnalyticsUtil
 
     private val homeViewModel: HomeViewModel by viewModels({ requireParentFragment() })
     private var adapter: FavoriteAdapter? = null
@@ -75,9 +80,10 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
         }
     }
 
-    override fun onFavoriteRemoveClick(stationUid: String) {
+    override fun onFavoriteRemoveClick(stationUid: String, stationName: String) {
         showToast(requireContext().getString(R.string.remove_from_favorite))
         viewModel.removeFavorite(stationUid)
+        firebaseAnalyticsUtil.favoriteRemoveClickEvent(stationUid, stationName)
     }
 
     override fun onFavoriteContentClick(entity: FavoriteEntity) {

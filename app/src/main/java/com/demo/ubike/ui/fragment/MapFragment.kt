@@ -33,6 +33,7 @@ import com.demo.ubike.ui.view.MarkerView
 import com.demo.ubike.ui.view.OnStationDetailListener
 import com.demo.ubike.ui.view.StationDetailView
 import com.demo.ubike.ui.view.SupportCityView
+import com.demo.ubike.utils.FirebaseAnalyticsUtil
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
@@ -47,6 +48,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.ui.IconGenerator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @SuppressLint("MissingPermission")
@@ -58,6 +60,9 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     companion object {
         fun newInstance() = MapFragment()
     }
+
+    @Inject
+    lateinit var firebaseAnalyticsUtil: FirebaseAnalyticsUtil
 
     private lateinit var map: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
@@ -237,6 +242,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
         // 如果重複點擊同個標記，就不需要再次addView
         if (tag != null && detailView == null) {
+            firebaseAnalyticsUtil.markerClickEvent(tag.stationUID, tag.stationNameZhTw)
             val highlightIcon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, true))
             marker.setIcon(highlightIcon)
 
@@ -392,9 +398,11 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                         CAMERA_ZOOM_LEVEL
                     )
                     map.moveCamera(cameraUpdate)
+                    firebaseAnalyticsUtil.supportCityClickEvent(it.apiKey)
                 },
                 onGoToSettingClick = {
                     gotToAndroidSettings()
+                    firebaseAnalyticsUtil.goToSettingClick()
                 }
             )
             val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.expand_search)

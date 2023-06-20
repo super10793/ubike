@@ -21,8 +21,12 @@ import com.demo.ubike.databinding.ViewStationDetailBinding
 import com.demo.ubike.extension.view.dpToPx
 import com.demo.ubike.extension.view.removeFromParent
 import com.demo.ubike.utils.EventObserver
+import com.demo.ubike.utils.FirebaseAnalyticsUtil
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @SuppressLint("ViewConstructor")
+@AndroidEntryPoint
 class StationDetailView @JvmOverloads constructor(
     private val context: Context,
     attrs: AttributeSet? = null,
@@ -35,6 +39,9 @@ class StationDetailView @JvmOverloads constructor(
         this,
         true
     )
+
+    @Inject
+    lateinit var firebaseAnalyticsUtil: FirebaseAnalyticsUtil
 
     private val viewModel by lazy {
         ViewModelProvider(findViewTreeViewModelStoreOwner()!!)[MapViewModel::class.java]
@@ -83,6 +90,10 @@ class StationDetailView @JvmOverloads constructor(
                 true -> {
                     viewModel.removeFavorite(station.stationUID)
                     showToast(context.getString(R.string.remove_from_favorite))
+                    firebaseAnalyticsUtil.favoriteRemoveClickEvent(
+                        station.stationUID,
+                        station.stationNameZhTw
+                    )
                 }
 
                 else -> {
@@ -102,6 +113,10 @@ class StationDetailView @JvmOverloads constructor(
                     )
                     viewModel.addFavorite(entity)
                     showToast(context.getString(R.string.added_to_favorite))
+                    firebaseAnalyticsUtil.favoriteAddClickEvent(
+                        station.stationUID,
+                        station.stationNameZhTw
+                    )
                 }
             }
         }

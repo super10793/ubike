@@ -9,11 +9,16 @@ import com.demo.ubike.data.model.ApiResult
 import com.demo.ubike.data.viewmodel.SplashViewModel
 import com.demo.ubike.databinding.FragmentSplashBinding
 import com.demo.ubike.ui.dialog.ExceptionDialog
+import com.demo.ubike.utils.FirebaseAnalyticsUtil
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
+
+    @Inject
+    lateinit var firebaseAnalyticsUtil: FirebaseAnalyticsUtil
     override fun getViewModelClass(): Class<SplashViewModel> = SplashViewModel::class.java
 
     override fun layoutId(): Int = R.layout.fragment_splash
@@ -27,6 +32,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
         ) {
             when (it) {
                 is ApiResult.Success<*> -> {
+                    firebaseAnalyticsUtil.loginEvent()
                     findNavController().navigate(R.id.homeFragment)
                 }
 
