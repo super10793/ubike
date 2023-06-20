@@ -43,4 +43,5 @@
     <string name="added_to_favorite">已加入最愛</string>
     <string name="remove_from_favorite">已移除最愛</string>
     <string name="give_full_permission_hint">點擊給予APP完整位置權限</string>
+    <string name="google_map_not_found">無法找到Google Map App</string>
 </resources>

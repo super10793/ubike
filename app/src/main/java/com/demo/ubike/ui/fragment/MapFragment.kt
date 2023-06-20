@@ -29,6 +29,7 @@ import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
 import com.demo.ubike.extension.permission.PermissionCallback
 import com.demo.ubike.extension.view.getStatusBarHeight
+import com.demo.ubike.extension.view.showRouteInGoogleMap
 import com.demo.ubike.ui.view.MarkerView
 import com.demo.ubike.ui.view.OnStationDetailListener
 import com.demo.ubike.ui.view.StationDetailView
@@ -298,6 +299,10 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override fun onStationDetailClose() {
         restoreLastMarker()
+    }
+
+    override fun onGoToGoogleMapClick(lat: Double, lon: Double) {
+        requireContext().showRouteInGoogleMap(lat, lon)
     }
 
     private fun restoreLastMarker() {

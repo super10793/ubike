@@ -101,6 +101,10 @@ class FavoriteAdapter(
         holder.binding.cardContent.setOnClickListener {
             itemClickListener?.onFavoriteContentClick(data)
         }
+
+        holder.binding.ivNavigation.setOnClickListener {
+            itemClickListener?.onGoToGoogleMapClick(data.positionLat, data.positionLon)
+        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
@@ -143,6 +147,8 @@ class FavoriteAdapter(
 
     class ViewHolder private constructor(val binding: ItemFavoriteBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        private val countDownMillis = 60000L
+        private val countDownInterval = 1000L
         private var countDownTimer: CountDownTimer? = null
         private lateinit var viewModel: FavoriteViewModel
 
@@ -164,7 +170,7 @@ class FavoriteAdapter(
 
         private fun startTimer() {
             stopTimer()
-            countDownTimer = object : CountDownTimer(60000, 1000) {
+            countDownTimer = object : CountDownTimer(countDownMillis, countDownInterval) {
                 @SuppressLint("SetTextI18n")
                 override fun onFinish() {
                     binding.favoriteEntity?.let {

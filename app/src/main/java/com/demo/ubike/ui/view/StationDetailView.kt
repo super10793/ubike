@@ -85,6 +85,13 @@ class StationDetailView @JvmOverloads constructor(
             removeFromParent()
         }
 
+        binding.ivNavigation.setOnClickListener {
+            listener?.onGoToGoogleMapClick(
+                station.positionLat,
+                station.positionLon
+            )
+        }
+
         binding.ivFavorite.setOnClickListener {
             when (binding.isFavorite) {
                 true -> {

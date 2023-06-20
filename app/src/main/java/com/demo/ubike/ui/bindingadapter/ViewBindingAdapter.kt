@@ -309,10 +309,10 @@ fun setElectricBikesCount(
     }
 }
 
-@BindingAdapter("visibleByContentValid")
-fun setVisibleByContentValid(
+@BindingAdapter("invisibleIfContentInvalid")
+fun setInvisibleIfContentInvalid(
     textview: AppCompatTextView,
     content: String?
 ) {
-    textview.visibility = if (content.isNullOrBlank()) View.GONE else View.VISIBLE
+    textview.visibility = if (content.isNullOrBlank()) View.INVISIBLE else View.VISIBLE
 }

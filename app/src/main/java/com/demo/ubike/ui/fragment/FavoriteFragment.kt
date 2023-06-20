@@ -16,6 +16,7 @@ import com.demo.ubike.databinding.FragmentFavoriteBinding
 import com.demo.ubike.extension.view.dpToPx
 import com.demo.ubike.extension.view.getStatusBarHeight
 import com.demo.ubike.extension.view.gone
+import com.demo.ubike.extension.view.showRouteInGoogleMap
 import com.demo.ubike.extension.view.visible
 import com.demo.ubike.utils.EventObserver
 import com.demo.ubike.utils.FirebaseAnalyticsUtil
@@ -88,6 +89,10 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
 
     override fun onFavoriteContentClick(entity: FavoriteEntity) {
         homeViewModel.clickFavoriteItem(entity)
+    }
+
+    override fun onGoToGoogleMapClick(lat: Double, lon: Double) {
+        requireContext().showRouteInGoogleMap(lat, lon)
     }
 
     private fun initRecyclerView() {

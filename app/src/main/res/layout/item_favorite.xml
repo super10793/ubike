@@ -79,9 +79,19 @@
                 android:layout_height="25dp"
                 android:layout_margin="8dp"
                 android:src="@drawable/favorite"
-                app:layout_constraintBottom_toBottomOf="@id/tv_address"
+                app:layout_constraintBottom_toBottomOf="@id/tv_title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tv_title" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_navigation"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/navigation"
+                app:layout_constraintBottom_toBottomOf="@id/tv_address"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_address" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_title"
@@ -103,13 +113,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
                 android:text="@{favoriteEntity.stationAddressZhTw}"
                 android:textColor="@color/black"
                 android:textSize="15dp"
-                app:visibleByContentValid="@{favoriteEntity.stationAddressZhTw}"
                 app:layout_constraintEnd_toStartOf="@id/cl_status"
                 app:layout_constraintStart_toEndOf="@id/iv_favorite"
                 app:layout_constraintTop_toBottomOf="@id/tv_title"
+                app:invisibleIfContentInvalid="@{favoriteEntity.stationAddressZhTw}"
                 tools:ignore="SpUsage"
                 tools:text="地址地址地址地址地址" />
 
