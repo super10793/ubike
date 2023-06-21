@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ubike</string>
+    <string name="app_name">寻找Youbike</string>
     <string name="app_name_debug">ubike debug</string>
     <string name="bottom_map_title">地图</string>
     <string name="bottom_favorite_title">最爱</string>
