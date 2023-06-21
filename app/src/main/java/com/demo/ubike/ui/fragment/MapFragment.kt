@@ -55,7 +55,7 @@ import javax.inject.Inject
 @SuppressLint("MissingPermission")
 @AndroidEntryPoint
 class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), OnMapReadyCallback,
-    LocationListener, OnMarkerClickListener, OnCameraIdleListener, OnMapClickListener,
+    OnMarkerClickListener, OnCameraIdleListener, OnMapClickListener,
     OnCameraMoveListener, OnStationDetailListener {
 
     companion object {
@@ -81,6 +81,32 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     private val iconCache = hashMapOf<Pair<Int, Boolean>, Bitmap>()
     private var userIsMoving = false
     private var lastClickMarker: Marker? = null
+    private val locationListener = object : LocationListener {
+        override fun onStatusChanged(
+            provider: String?,
+            status: Int,
+            extras: Bundle?
+        ) {
+            // empty
+        }
+
+        override fun onProviderEnabled(provider: String) {
+            // empty
+        }
+
+        override fun onProviderDisabled(provider: String) {
+            moveCameraToTaiwan()
+        }
+
+        override fun onLocationChanged(location: Location) {
+            // move to current location
+            val latLng = LatLng(location.latitude, location.longitude)
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, CAMERA_ZOOM_LEVEL)
+            map.moveCamera(cameraUpdate)
+            map.isMyLocationEnabled = true
+            locationManager.removeUpdates(this)
+        }
+    }
 
     override fun getViewModelClass(): Class<MapViewModel> = MapViewModel::class.java
 
@@ -229,14 +255,6 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         moveToCurrentLocation()
     }
 
-    override fun onLocationChanged(location: Location) {
-        val latLng = LatLng(location.latitude, location.longitude)
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, CAMERA_ZOOM_LEVEL)
-        map.moveCamera(cameraUpdate)
-        map.isMyLocationEnabled = true
-        locationManager.removeUpdates(this)
-    }
-
     override fun onMarkerClick(marker: Marker): Boolean {
         val tag = marker.tag as? StationEntity
         val detailView = viewDataBinding.flStationDetail.findViewWithTag<View>(tag?.stationUID)
@@ -332,21 +350,25 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                         LocationManager.NETWORK_PROVIDER,
                         MIN_TIME,
                         MIN_DISTANCE,
-                        this@MapFragment
+                        locationListener
                     )
                 }
 
                 override fun onPermissionDenied(perms: MutableList<String>) {
-                    map.moveCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            TAIWAN_LATLNG,
-                            CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN
-                        )
-                    )
-                    onSearchBtnClick(true)
+                    moveCameraToTaiwan()
                 }
             }
         )
+    }
+
+    private fun moveCameraToTaiwan() {
+        map.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                TAIWAN_LATLNG,
+                CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN
+            )
+        )
+        onSearchBtnClick(true)
     }
 
     private fun changeMapDefaultUi() {
