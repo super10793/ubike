@@ -3,6 +3,7 @@ package com.demo.ubike.utils
 import android.content.Context
 import android.os.Bundle
 import androidx.core.os.bundleOf
+import com.demo.ubike.BuildConfig
 import com.demo.ubike.extension.view.getDeviceId
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -14,6 +15,7 @@ class FirebaseAnalyticsUtil @Inject constructor(
     private val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
     companion object {
+        private const val DEBUG_SUFFIX = "_debug"
         const val MARKER_CLICK = "marker_click_event"
         const val FAVORITE_ADD_CLICK = "favorite_add_click_event"
         const val FAVORITE_REMOVE_CLICK = "favorite_remove_click_event"
@@ -74,6 +76,11 @@ class FirebaseAnalyticsUtil @Inject constructor(
     }
 
     private fun logEvent(name: String, event: Bundle) {
-        firebaseAnalytics.logEvent(name, event)
+        val eventName = if (BuildConfig.DEBUG) {
+            "$name$DEBUG_SUFFIX"
+        } else {
+            name
+        }
+        firebaseAnalytics.logEvent(eventName, event)
     }
 }
