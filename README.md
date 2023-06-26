@@ -13,7 +13,8 @@
 
 
 ### Demo
-![demo](readme/demo.gif)
+- ![demo](readme/demo.gif)
+- [Demo影片](https://www.youtube.com/shorts/76vp86woB5U)
 
 
 ### Dependencies
