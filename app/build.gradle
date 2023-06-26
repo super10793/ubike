@@ -22,8 +22,8 @@ android {
         applicationId "com.demo.ubike"
         minSdk 22
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 1001
+        versionName "1.0.01"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "API_CLIENT_ID", secretsProperties['API_CLIENT_ID']
         buildConfigField "String", "API_CLIENT_SECRET", secretsProperties['API_CLIENT_SECRET']
