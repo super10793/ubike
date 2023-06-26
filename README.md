@@ -13,7 +13,7 @@
 
 
 ### Demo
-![demo](readme/demo.mp4)
+![demo](readme/demo.gif)
 
 
 ### Dependencies
