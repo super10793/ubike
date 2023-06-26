@@ -6,9 +6,9 @@
     <string name="status_normal">正常營運</string>
     <string name="status_stop">停止營運</string>
     <string name="status_pause">暫停營運</string>
-    <string name="available_rent">可租借：%s</string>
+    <string name="available_rent">可借數量：%s</string>
     <string name="available_rent_detail">(電輔車：%s、一般自行車：%s)</string>
-    <string name="available_return">可歸還：%s</string>
+    <string name="available_return">可停空位：%s</string>
     <string name="data_update_time">．資料更新時間：%s</string>
     <string name="favorite_list_is_empty">目前沒有任何收藏站點</string>
     <string name="default_dialog_title">訊息</string>
