@@ -8,7 +8,7 @@
 
 ### 基本資料
 - App名稱：尋找Youbike
-- Google Play連結：(審核中)
+- [Google Play連結](https://play.google.com/store/apps/details?id=com.demo.ubike)
 - 可查詢各縣市的Youbike(1.0、2.0)數量，目前支援查詢縣市：台北市、新北市、桃園市、新竹縣、新竹市、苗栗縣、台中市、嘉義市、高雄市、台南市、屏東縣、金門縣
 
 
