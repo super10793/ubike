@@ -18,28 +18,28 @@
 
 
 ### Dependencies
-1. 依賴注入
+1. Dependency injection
 	+ [Hilt](https://developer.android.com/training/dependency-injection/hilt-android?hl=zh-tw)
-2. 網路相關
+2. Network
 	+ [Okhttp3](https://github.com/square/okhttp)
 	+ [Retrofit2](https://github.com/square/retrofit)
 	+ [Rxjava2](https://github.com/ReactiveX/RxJava)
-3. 本地儲存相關
+3. Storage
 	+ [Room](https://developer.android.com/training/data-storage/room?hl=zh-tw)
 	+ [Preference](https://developer.android.com/jetpack/androidx/releases/preference?hl=zh-cn)
-4. 導航相關
+4. Navigation
 	+ [Navigation](https://developer.android.com/jetpack/androidx/releases/navigation?hl=zh-cn)
-5. Firebase相關
+5. Firebase
 	+ [Firebase Analytics](https://firebase.google.com/docs/analytics/get-started?hl=zh-cn&platform=android)
 	+ [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics/?hl=zh-cn)
-6. 權限相關
+6. Permissions
 	+ [Easypermissions](https://github.com/googlesamples/easypermissions)
-7. debug相關
+7. Debug tool
 	+ [Flipper](https://fbflipper.com/)
 
 
 ### App架構
-![image](readme/architecture.png)
+![image](readme/app-architecture.png)
 
 ### 參考資料
 - [運輸資料流通服務平臺(Transport Data eXchange , TDX)](https://tdx.transportdata.tw)
