@@ -11,6 +11,6 @@ class FetchStationAndInsertUseCase @Inject constructor(
     private val sharePrefers: SharePreferenceManager
 ) {
     operator fun invoke(city: City): Completable {
-        return homeRepository.fetchStationAndInsert(sharePrefers.token, city)
+        return homeRepository.fetchStationAndInsert(sharePrefers.randomToken(), city)
     }
 }

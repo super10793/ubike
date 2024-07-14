@@ -11,4 +11,8 @@ class FetchTokenUseCase @Inject constructor(
     operator fun invoke(): Single<TokenResponse> {
         return homeRepository.fetchToken()
     }
+
+    fun fetchTokens(): Single<List<TokenResponse>> {
+        return homeRepository.fetchTokens()
+    }
 }

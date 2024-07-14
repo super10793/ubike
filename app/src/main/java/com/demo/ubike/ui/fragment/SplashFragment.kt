@@ -49,7 +49,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
                             )
                         )
                         .setConfirmClickListener {
-                            viewModel.fetchToken()
+                            viewModel.fetchTokens()
                         }
                         .build()
                     dialog.show()
@@ -60,6 +60,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.fetchToken()
+        viewModel.fetchTokens()
     }
 }

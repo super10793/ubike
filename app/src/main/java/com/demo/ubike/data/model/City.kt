@@ -95,15 +95,21 @@ enum class City(
             LatLng(22.5519, 121.8788)
         ),
         LatLng(22.669167, 120.485278)
-    ),
-    Kinmen(
-        "KinmenCounty",
-        LatLngBounds(
-            LatLng(24.3854, 118.0962),
-            LatLng(24.6101, 118.4931)
-        ),
-        LatLng(24.436270597001986, 118.31774421036242)
     );
+
+    companion object {
+        fun part1Cities(): List<City> {
+            return listOf(Taipei, NewTaipei, Taoyuan)
+        }
+
+        fun part2Cities(): List<City> {
+            return listOf(HsinchuCounty, Hsinchu, Miaoli, Taichung)
+        }
+
+        fun part3Cities(): List<City> {
+            return listOf(Chiayi, Tainan, Kaohsiung, Pingtung)
+        }
+    }
 
     fun currentCity(lat: Double, lng: Double): City {
         val location = LatLng(lat, lng)

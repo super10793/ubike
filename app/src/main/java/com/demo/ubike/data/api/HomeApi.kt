@@ -18,8 +18,8 @@ interface HomeApi {
     @POST("/auth/realms/TDXConnect/protocol/openid-connect/token")
     fun fetchToken(
         @Field("grant_type") grantType: String = Config.GRANT_TYPE,
-        @Field("client_id") clientId: String = Config.CLIENT_ID,
-        @Field("client_secret") clientSecret: String = Config.CLIENT_SECRET
+        @Field("client_id") clientId: String,
+        @Field("client_secret") clientSecret: String
     ): Single<TokenResponse>
 
     /**

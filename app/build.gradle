@@ -16,17 +16,21 @@ secretsProperties.load(new FileInputStream(secretsPropertiesFile))
 
 android {
     namespace 'com.demo.ubike'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.demo.ubike"
         minSdk 22
-        targetSdk 33
+        targetSdk 34
         versionCode 1003
         versionName "1.0.03"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "API_CLIENT_ID", secretsProperties['API_CLIENT_ID']
-        buildConfigField "String", "API_CLIENT_SECRET", secretsProperties['API_CLIENT_SECRET']
+        buildConfigField "String", "API_CLIENT_ID_1", secretsProperties['API_CLIENT_ID_1']
+        buildConfigField "String", "API_CLIENT_SECRET_1", secretsProperties['API_CLIENT_SECRET_1']
+        buildConfigField "String", "API_CLIENT_ID_2", secretsProperties['API_CLIENT_ID_2']
+        buildConfigField "String", "API_CLIENT_SECRET_2", secretsProperties['API_CLIENT_SECRET_2']
+        buildConfigField "String", "API_CLIENT_ID_3", secretsProperties['API_CLIENT_ID_3']
+        buildConfigField "String", "API_CLIENT_SECRET_3", secretsProperties['API_CLIENT_SECRET_3']
         manifestPlaceholders = [
                 "mapsApiKey": secretsProperties.getProperty("MAPS_API_KEY")
         ]

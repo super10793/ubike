@@ -12,12 +12,12 @@ class FetchStationDetailUseCase @Inject constructor(
     private val sharePrefers: SharePreferenceManager
 ) {
     operator fun invoke(city: City): Single<StationDetailResponse> {
-        return homeRepository.fetchStationDetail(sharePrefers.token, city)
+        return homeRepository.fetchStationDetail(sharePrefers.randomToken(), city)
     }
 
     fun byStationUid(city: City, stationUID: String): Single<StationDetailResponse> {
         return homeRepository.fetchStationDetailById(
-            sharePrefers.token,
+            sharePrefers.randomToken(),
             city,
             stationUID
         )

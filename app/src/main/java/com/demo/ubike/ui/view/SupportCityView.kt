@@ -41,7 +41,6 @@ class SupportCityView @JvmOverloads constructor(
         binding.btnKaohsiung.setOnClickListener { onCityClick(City.Kaohsiung) }
         binding.btnTainan.setOnClickListener { onCityClick(City.Tainan) }
         binding.btnPingtungCounty.setOnClickListener { onCityClick(City.Pingtung) }
-        binding.btnKinmenCounty.setOnClickListener { onCityClick(City.Kinmen) }
         binding.btnGivePermission.setOnClickListener { onGoToSettingClick() }
     }
 

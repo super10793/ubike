@@ -12,6 +12,6 @@ class FetchStationUseCase @Inject constructor(
     private val sharePrefers: SharePreferenceManager
 ) {
     operator fun invoke(city: City): Single<StationResponse> {
-        return homeRepository.fetchStation(sharePrefers.token, city)
+        return homeRepository.fetchStation(sharePrefers.randomToken(), city)
     }
 }

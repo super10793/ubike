@@ -13,11 +13,19 @@ import io.reactivex.Single
 interface HomeRepository {
     fun fetchToken(): Single<TokenResponse>
 
+    fun fetchTokens(): Single<List<TokenResponse>>
+
     fun fetchStation(token: String, city: City): Single<StationResponse>
 
     fun fetchStationAndInsert(token: String, city: City): Completable
 
-    fun fetchAllCityStation(token: String): Completable
+    fun fetchAllCityStation(): Completable
+
+    fun fetchPart1CityStation(): Single<List<StationResponse.Data>>
+
+    fun fetchPart2CityStation(): Single<List<StationResponse.Data>>
+
+    fun fetchPart3CityStation(): Single<List<StationResponse.Data>>
 
     fun fetchAllCityStationDetail(token: String): Completable
 

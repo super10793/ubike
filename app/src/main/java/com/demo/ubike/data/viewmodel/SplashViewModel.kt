@@ -18,13 +18,13 @@ class SplashViewModel @Inject constructor(
     private var _fetchTokenResult = MutableLiveData<ApiResult>()
     val fetchTokenResult: LiveData<ApiResult> = _fetchTokenResult
 
-    fun fetchToken() {
-        fetchTokenUseCase()
+    fun fetchTokens() {
+        fetchTokenUseCase.fetchTokens()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _fetchTokenResult.value = ApiResult.Success(it)
-                sharePreferenceManager.token = it.access_token
+            .subscribe({ tokens ->
+                _fetchTokenResult.value = ApiResult.Success(tokens)
+                sharePreferenceManager.tokens = tokens.map { it.access_token }.toSet()
             }, {
                 _fetchTokenResult.value = ApiResult.Fail(it)
             })

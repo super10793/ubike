@@ -29,7 +29,8 @@ class StationResponse : ArrayList<StationResponse.Data>() {
         @SerializedName("StationName")
         val stationName: StationName,
         @SerializedName("StationAddress")
-        val stationAddress: StationAddress
+        val stationAddress: StationAddress,
+        var city: City
     )
 
     /**

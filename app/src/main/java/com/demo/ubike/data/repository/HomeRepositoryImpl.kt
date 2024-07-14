@@ -28,7 +28,31 @@ class HomeRepositoryImpl @Inject constructor(
     private val favoriteDao: FavoriteDao
 ) : HomeRepository {
     override fun fetchToken(): Single<TokenResponse> {
-        return homeApi.fetchToken()
+        return homeApi.fetchToken(
+            clientId = Config.CLIENT_ID_1,
+            clientSecret = Config.CLIENT_SECRET_1
+        )
+    }
+
+    override fun fetchTokens(): Single<List<TokenResponse>> {
+
+        val tokenRequests = listOf(
+            homeApi.fetchToken(
+                clientId = Config.CLIENT_ID_1, clientSecret = Config.CLIENT_SECRET_1
+            ),
+            homeApi.fetchToken(
+                clientId = Config.CLIENT_ID_2, clientSecret = Config.CLIENT_SECRET_2
+            ),
+            homeApi.fetchToken(
+                clientId = Config.CLIENT_ID_3, clientSecret = Config.CLIENT_SECRET_3
+            )
+        )
+
+        return Observable.fromIterable(tokenRequests)
+            .concatMapSingle { api ->
+                api.map { it }
+            }
+            .toList()
     }
 
     override fun fetchStation(token: String, city: City): Single<StationResponse> {
@@ -62,39 +86,52 @@ class HomeRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun fetchAllCityStation(token: String): Completable {
-        val list = City.values().toMutableList()
-        return Observable.fromIterable(list)
-            .flatMapCompletable { item ->
-                val url = String.format(Config.API_STATION_URL, item.apiKey)
-                val tokenStr = String.format(Config.API_HEADER_TOKEN, token)
-                homeApi.fetchStation(url, tokenStr)
-                    .flatMapCompletable {
-                        val insert = it.map { response ->
-                            StationEntity(
-                                stationUID = response.stationUID,
-                                stationID = response.stationID,
-                                authorityID = response.authorityID,
-                                city = item,
-                                bikesCapacity = response.bikesCapacity,
-                                serviceType = response.serviceType,
-                                positionLon = response.stationPosition.positionLon,
-                                positionLat = response.stationPosition.positionLat,
-                                stationNameZhTw = response.stationName.zh_tw,
-                                stationNameEn = response.stationName.en.orEmpty(),
-                                stationAddressZhTw = response.stationAddress.zh_tw.orEmpty(),
-                                stationAddressEn = response.stationAddress.en.orEmpty()
-                            )
-                        }
-                        stationDao.insertStation(insert)
+    override fun fetchAllCityStation(): Completable {
+        val requests: List<Single<List<StationResponse.Data>>> = listOf(
+            fetchPart1CityStation(),
+            fetchPart2CityStation(),
+            fetchPart3CityStation(),
+        )
+
+        return Single.zip(requests) { results ->
+            results.flatMap { it as List<*> }
+        }
+            .flatMapCompletable { allStations ->
+                val insert = allStations.mapNotNull { response ->
+                    (response as? StationResponse.Data)?.let {
+                        StationEntity(
+                            stationUID = response.stationUID,
+                            stationID = response.stationID,
+                            authorityID = response.authorityID,
+                            city = response.city,
+                            bikesCapacity = response.bikesCapacity,
+                            serviceType = response.serviceType,
+                            positionLon = response.stationPosition.positionLon,
+                            positionLat = response.stationPosition.positionLat,
+                            stationNameZhTw = response.stationName.zh_tw,
+                            stationNameEn = response.stationName.en.orEmpty(),
+                            stationAddressZhTw = response.stationAddress.zh_tw.orEmpty(),
+                            stationAddressEn = response.stationAddress.en.orEmpty()
+                        )
                     }
-                    .onErrorResumeNext { throwable ->
-                        Completable.error(throwable)
-                    }
-                    .toObservable<Void>()
-                    .onErrorResumeNext(Observable.empty())
-                    .ignoreElements()
+                }
+                stationDao.insertStation(insert)
             }
+            .onErrorResumeNext { throwable ->
+                Completable.error(throwable)
+            }
+    }
+
+    override fun fetchPart1CityStation(): Single<List<StationResponse.Data>> {
+        return fetchPartOfCityStations(City.part1Cities(), sharePrefer.tokens.toList()[0])
+    }
+
+    override fun fetchPart2CityStation(): Single<List<StationResponse.Data>> {
+        return fetchPartOfCityStations(City.part2Cities(), sharePrefer.tokens.toList()[1])
+    }
+
+    override fun fetchPart3CityStation(): Single<List<StationResponse.Data>> {
+        return fetchPartOfCityStations(City.part3Cities(), sharePrefer.tokens.toList()[2])
     }
 
     override fun fetchAllCityStationDetail(token: String): Completable {
@@ -174,5 +211,27 @@ class HomeRepositoryImpl @Inject constructor(
 
     override fun getAllFavorite(): Single<List<FavoriteEntity>> {
         return favoriteDao.getAllFavorite()
+    }
+
+    /* private functions */
+
+    private fun fetchPartOfCityStations(
+        cities: List<City>,
+        token: String
+    ): Single<List<StationResponse.Data>> {
+        val apis = cities.map { city ->
+            val url = String.format(Config.API_STATION_URL, city.apiKey)
+            val tokenStr = String.format(Config.API_HEADER_TOKEN, token)
+            homeApi.fetchStation(url, tokenStr).map { response ->
+                response.onEach { it.city = city }
+            }
+        }
+
+        return Single.zip(apis) { results ->
+            val lists = results.mapNotNull {
+                (it as? (StationResponse))?.toList()
+            }
+            lists.flatten()
+        }.map { it }
     }
 }

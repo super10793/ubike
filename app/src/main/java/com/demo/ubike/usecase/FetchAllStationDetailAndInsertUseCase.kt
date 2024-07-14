@@ -10,6 +10,6 @@ class FetchAllStationDetailAndInsertUseCase @Inject constructor(
     private val sharePrefers: SharePreferenceManager
 ) {
     operator fun invoke(): Completable {
-        return homeRepository.fetchAllCityStationDetail(sharePrefers.token)
+        return homeRepository.fetchAllCityStationDetail(sharePrefers.randomToken())
     }
 }

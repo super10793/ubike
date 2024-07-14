@@ -126,6 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
+                android:visibility="invisible"
                 android:text="@string/city_kinmenCounty" />
 
         </LinearLayout>

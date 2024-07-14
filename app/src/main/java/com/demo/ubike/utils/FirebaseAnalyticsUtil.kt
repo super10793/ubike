@@ -2,9 +2,11 @@ package com.demo.ubike.utils
 
 import android.content.Context
 import android.os.Bundle
+import android.provider.Settings
 import androidx.core.os.bundleOf
 import com.demo.ubike.BuildConfig
 import com.demo.ubike.extension.view.getDeviceId
+import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -71,7 +73,12 @@ class FirebaseAnalyticsUtil @Inject constructor(
     }
 
     fun loginEvent() {
-        val deviceId = context.getDeviceId()
+        val deviceId: String = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            context.deviceId.toString()
+        } else {
+            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+        }
+
         firebaseAnalytics.setUserId(deviceId)
     }
 
