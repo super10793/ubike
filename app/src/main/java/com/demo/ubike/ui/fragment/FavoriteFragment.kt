@@ -18,7 +18,7 @@ import com.demo.ubike.extension.view.getStatusBarHeight
 import com.demo.ubike.extension.view.gone
 import com.demo.ubike.extension.view.showRouteInGoogleMap
 import com.demo.ubike.extension.view.visible
-import com.demo.ubike.utils.EventObserver
+import com.demo.ubike.result.EventObserver
 import com.demo.ubike.utils.FirebaseAnalyticsUtil
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

@@ -20,7 +20,7 @@ import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.ViewStationDetailBinding
 import com.demo.ubike.extension.view.dpToPx
 import com.demo.ubike.extension.view.removeFromParent
-import com.demo.ubike.utils.EventObserver
+import com.demo.ubike.result.EventObserver
 import com.demo.ubike.utils.FirebaseAnalyticsUtil
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

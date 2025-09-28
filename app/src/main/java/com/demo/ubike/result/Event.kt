@@ -1,4 +1,4 @@
-package com.demo.ubike.utils
+package com.demo.ubike.result
 
 import androidx.lifecycle.Observer
 

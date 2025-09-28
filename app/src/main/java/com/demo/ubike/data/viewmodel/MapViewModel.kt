@@ -12,7 +12,7 @@ import com.demo.ubike.usecase.FetchAllStationAndInsertUseCase
 import com.demo.ubike.usecase.FetchStationDetailUseCase
 import com.demo.ubike.usecase.GetStationsUseCase
 import com.demo.ubike.usecase.RemoveFavoriteUseCase
-import com.demo.ubike.utils.Event
+import com.demo.ubike.result.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable

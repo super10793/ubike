@@ -8,12 +8,11 @@ import com.demo.ubike.data.model.StationDetailResponse
 import com.demo.ubike.usecase.FetchStationDetailUseCase
 import com.demo.ubike.usecase.GetAllFavoriteUseCase
 import com.demo.ubike.usecase.RemoveFavoriteUseCase
-import com.demo.ubike.utils.Event
+import com.demo.ubike.result.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
