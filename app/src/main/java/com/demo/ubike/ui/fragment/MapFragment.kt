@@ -2,8 +2,10 @@ package com.demo.ubike.ui.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationListener
@@ -16,7 +18,11 @@ import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.widget.RelativeLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.viewModels
 import com.demo.ubike.R
@@ -52,28 +58,29 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
-@SuppressLint("MissingPermission")
 @AndroidEntryPoint
-class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), OnMapReadyCallback,
+class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReadyCallback,
     OnMarkerClickListener, OnCameraIdleListener, OnMapClickListener,
     OnCameraMoveListener, OnStationDetailListener {
 
     companion object {
+        private const val MIN_TIME: Long = 400
+        private const val MIN_DISTANCE = 1000f
+        private const val VISIBLE_ZOOM_LEVEL = 12
+        private const val CAMERA_ZOOM_LEVEL = 15f
+        private const val CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN = 8.1f
+
         fun newInstance() = MapFragment()
     }
 
     @Inject
     lateinit var firebaseAnalyticsUtil: FirebaseAnalyticsUtil
 
-    private lateinit var map: GoogleMap
-    private lateinit var mapFragment: SupportMapFragment
-    private lateinit var locationManager: LocationManager
-    private val MIN_TIME: Long = 400
-    private val MIN_DISTANCE = 1000f
-    private val VISIBLE_ZOOM_LEVEL = 12
-    private val CAMERA_ZOOM_LEVEL = 15f
-    private val CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN = 8.1f
-    private val TAIWAN_LATLNG: LatLng = LatLng(23.617133617023338, 121.0056421905756)
+    private var googleMap: GoogleMap? = null
+    private var supportMapFragment: SupportMapFragment? = null
+    private var locationManager: LocationManager? = null
+
+    private val taiwanLatLng = LatLng(23.617133617023338, 121.0056421905756)
 
     private val pendingMarkers: MutableList<CustomMarkerOption> = mutableListOf()
     private val currentMarkers: MutableList<CustomMarker> = mutableListOf()
@@ -99,12 +106,22 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         }
 
         override fun onLocationChanged(location: Location) {
-            // move to current location
             val latLng = LatLng(location.latitude, location.longitude)
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, CAMERA_ZOOM_LEVEL)
-            map.moveCamera(cameraUpdate)
-            map.isMyLocationEnabled = true
-            locationManager.removeUpdates(this)
+            googleMap?.moveCamera(cameraUpdate)
+            googleMap?.isMyLocationEnabled(true)
+            locationManager?.removeUpdates(this)
+        }
+    }
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            moveToCurrentLocation()
+        } else {
+            moveCameraToTaiwan()
         }
     }
 
@@ -118,27 +135,17 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mapFragment = childFragmentManager.findFragmentById(R.id.fragment_map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-        locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        supportMapFragment =
+            childFragmentManager.findFragmentById(R.id.fragment_map) as? SupportMapFragment
+        supportMapFragment?.getMapAsync(this)
+        locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
         viewModel.fetchAllStationAndInsert()
         initSearchButton()
     }
 
     override fun onResume() {
         super.onResume()
-        val isMapOk = this::map.isInitialized
-        when {
-            isMapOk && hasAnyLocationPermissions() -> {
-                map.isMyLocationEnabled = true
-            }
-
-            isMapOk && !hasAnyLocationPermissions() -> {
-                map.isMyLocationEnabled = false
-            }
-
-            else -> {}
-        }
+        googleMap?.isMyLocationEnabled(hasAnyLocationPermissions())
     }
 
     override fun onPause() {
@@ -151,8 +158,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override fun initObserver() {
         viewModel.stations.observe(viewLifecycleOwner) { stations ->
-            if (!::map.isInitialized) return@observe
-            if (stations == null || stations.isEmpty()) return@observe
+            if (googleMap == null || stations == null || stations.isEmpty()) return@observe
 
             // 移除不該出現在地圖上的標記
             val iterator = currentMarkers.iterator()
@@ -194,7 +200,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             selectFromFavorite = it
             val latLng = LatLng(it.positionLat, it.positionLon)
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, CAMERA_ZOOM_LEVEL)
-            map.moveCamera(cameraUpdate)
+            googleMap?.moveCamera(cameraUpdate)
         }
     }
 
@@ -203,7 +209,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             val first = pendingMarkers.first()
             val alreadyOnMap = currentMarkers.find { it.id == first.id } != null
             if (!alreadyOnMap) {
-                map.addMarker(first.markerOptions)?.also {
+                googleMap?.addMarker(first.markerOptions)?.also {
                     it.tag = first.stationEntity
                     currentMarkers.add(CustomMarker(first.stationEntity.stationUID, it))
                 }
@@ -219,7 +225,7 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
                 }
             }
 
-            pendingMarkers.removeFirst()
+            pendingMarkers.removeAt(0)
         }
     }
 
@@ -246,13 +252,13 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-        map.setOnMarkerClickListener(this)
-        map.setOnMapClickListener(this)
-        map.setOnCameraMoveListener(this)
-        map.setOnCameraIdleListener(this)
+        this.googleMap = googleMap
+        this.googleMap?.setOnMarkerClickListener(this)
+        this.googleMap?.setOnMapClickListener(this)
+        this.googleMap?.setOnCameraMoveListener(this)
+        this.googleMap?.setOnCameraIdleListener(this)
         changeMapDefaultUi()
-        moveToCurrentLocation()
+        checkPermissions()
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -288,21 +294,23 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     override fun onCameraIdle() {
         userIsMoving = false
-        val zoom = map.cameraPosition.zoom
-        val target = map.cameraPosition.target
-        val latitude = target.latitude
-        val longitude = target.longitude
-        if (zoom > VISIBLE_ZOOM_LEVEL) {
-            viewModel.getStations(latitude, longitude)
-        } else {
-            map.clear()
-            pendingMarkers.clear()
-            currentMarkers.clear()
-            lastClickMarker = null
-            viewDataBinding.flStationDetail.removeAllViews()
-        }
+        googleMap?.let { map ->
+            val zoom = map.cameraPosition.zoom
+            val target = map.cameraPosition.target
+            val latitude = target.latitude
+            val longitude = target.longitude
+            if (zoom > VISIBLE_ZOOM_LEVEL) {
+                viewModel.getStations(latitude, longitude)
+            } else {
+                map.clear()
+                pendingMarkers.clear()
+                currentMarkers.clear()
+                lastClickMarker = null
+                viewDataBinding.flStationDetail.removeAllViews()
+            }
 
-        startAddMarker()
+            startAddMarker()
+        }
     }
 
     override fun onCameraMove() {
@@ -336,35 +344,57 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         }
     }
 
-    private fun moveToCurrentLocation() {
-        requestPermissions(
-            permissions = arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            rationale = null,
-            requestCode = 900,
-            permissionCallback = object : PermissionCallback {
-                override fun onPermissionGranted(perms: MutableList<String>) {
-                    locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER,
-                        MIN_TIME,
-                        MIN_DISTANCE,
-                        locationListener
-                    )
-                }
-
-                override fun onPermissionDenied(perms: MutableList<String>) {
-                    moveCameraToTaiwan()
-                }
-            }
+    private fun checkPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
         )
+
+        val deniedPermissions = permissions.filter {
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                it
+            ) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (deniedPermissions.isEmpty()) {
+            moveToCurrentLocation()
+        } else {
+            val shouldShowRationale = deniedPermissions.any {
+                ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), it)
+            }
+            if (shouldShowRationale) {
+                AlertDialog.Builder(requireContext())
+                    .setMessage(getString(R.string.location_permission_hint))
+                    .setPositiveButton(R.string.setting) { _, _ ->
+                        permissionLauncher.launch(deniedPermissions.toTypedArray())
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+            } else {
+                permissionLauncher.launch(deniedPermissions.toTypedArray())
+            }
+        }
+
+    }
+
+    private fun moveToCurrentLocation() {
+        try {
+            locationManager?.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                MIN_TIME,
+                MIN_DISTANCE,
+                locationListener
+            )
+        } catch (e: SecurityException) {
+            println(e)
+        }
     }
 
     private fun moveCameraToTaiwan() {
-        map.moveCamera(
+        googleMap?.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
-                TAIWAN_LATLNG,
+                taiwanLatLng,
                 CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN
             )
         )
@@ -373,9 +403,9 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
 
     private fun changeMapDefaultUi() {
         // 調整「我當前位置」按鈕位置，設定在右下角
-        val mapView = mapFragment.requireView()
+        val mapView = supportMapFragment?.requireView()
         val myLocationButtonTagName = "GoogleMapMyLocationButton"
-        val locationButton = mapView.findViewWithTag<View>(myLocationButtonTagName)
+        val locationButton = mapView?.findViewWithTag<View>(myLocationButtonTagName)
         locationButton?.let {
             val layoutParams = it.layoutParams as RelativeLayout.LayoutParams
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
@@ -384,10 +414,10 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
         }
 
         // 點marker時隱藏導航按鈕
-        map.uiSettings.isMapToolbarEnabled = false
+        googleMap?.uiSettings?.isMapToolbarEnabled = false
 
         // 禁止旋轉地圖
-        map.uiSettings.isRotateGesturesEnabled = false
+        googleMap?.uiSettings?.isRotateGesturesEnabled = false
     }
 
     private fun initSearchButton() {
@@ -418,13 +448,12 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
             // add view
             val customView = SupportCityView(
                 context = requireContext(),
-                hasFullLocationPermission = hasFullLocationPermissions(),
                 onCityClick = {
                     val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
                         it.cityCenter,
                         CAMERA_ZOOM_LEVEL
                     )
-                    map.moveCamera(cameraUpdate)
+                    googleMap?.moveCamera(cameraUpdate)
                     firebaseAnalyticsUtil.supportCityClickEvent(it.apiKey)
                 },
                 onGoToSettingClick = {
@@ -462,9 +491,31 @@ class MapFragment : BasePermissionFragment<FragmentMapBinding, MapViewModel>(), 
     }
 
     private fun gotToAndroidSettings() {
-        val uri = Uri.parse("package:${requireContext().packageName}")
+        val uri = "package:${requireContext().packageName}".toUri()
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         requireContext().startActivity(intent)
+    }
+
+    private fun GoogleMap.isMyLocationEnabled(enable: Boolean) {
+        try {
+            this.isMyLocationEnabled = enable
+        } catch (e: SecurityException) {
+            println(e)
+        }
+    }
+
+    private fun hasAnyLocationPermissions(): Boolean {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        return permissions.any { permission ->
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        }
     }
 }

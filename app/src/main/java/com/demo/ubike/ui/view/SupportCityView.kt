@@ -1,10 +1,13 @@
 package com.demo.ubike.ui.view
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.GridLayout
+import androidx.core.content.ContextCompat
 import com.demo.ubike.data.model.City
 import com.demo.ubike.databinding.ViewSupportCityBinding
 import com.demo.ubike.extension.view.visibleIf
@@ -14,7 +17,6 @@ class SupportCityView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    private val hasFullLocationPermission: Boolean,
     private val onCityClick: ((city: City) -> Unit),
     private val onGoToSettingClick: (() -> Unit)
 ) : GridLayout(context, attrs, defStyleAttr) {
@@ -45,6 +47,20 @@ class SupportCityView @JvmOverloads constructor(
     }
 
     private fun initView() {
-        binding.btnGivePermission visibleIf !hasFullLocationPermission
+        binding.btnGivePermission visibleIf !hasFullLocationPermissions()
+    }
+
+    private fun hasFullLocationPermissions(): Boolean {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        return permissions.all { permission ->
+            ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        }
     }
 }
