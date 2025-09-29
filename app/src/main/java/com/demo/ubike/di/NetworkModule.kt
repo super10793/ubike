@@ -1,7 +1,7 @@
 package com.demo.ubike.di
 
-import com.demo.ubike.Config
 import com.demo.ubike.data.api.HomeApi
+import com.demo.ubike.network.ResultCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,20 +9,21 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    private const val BASE_URL = "https://tdx.transportdata.tw/"
+
     @Singleton
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(Config.BASE_URL)
+            .addCallAdapterFactory(ResultCallAdapterFactory())
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .build()
     }

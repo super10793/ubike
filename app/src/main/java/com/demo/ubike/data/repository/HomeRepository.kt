@@ -2,48 +2,32 @@ package com.demo.ubike.data.repository
 
 import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.local.station.StationEntity
-import com.demo.ubike.data.model.City
 import com.demo.ubike.data.model.StationDetailResponse
 import com.demo.ubike.data.model.StationResponse
 import com.demo.ubike.data.model.TokenResponse
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import com.demo.ubike.result.Result
 
 interface HomeRepository {
-    fun fetchToken(): Single<TokenResponse>
 
-    fun fetchTokens(): Single<List<TokenResponse>>
+    suspend fun fetchToken(clientId: String, clientSecret: String): Result<TokenResponse>
 
-    fun fetchStation(token: String, city: City): Single<StationResponse>
+    suspend fun fetchStation(token: String, cityKey: String): Result<StationResponse>
 
-    fun fetchStationAndInsert(token: String, city: City): Completable
+    suspend fun insertStationEntities(entities: List<StationEntity>): Result<Unit>
 
-    fun fetchAllCityStation(): Completable
-
-    fun fetchPart1CityStation(): Single<List<StationResponse.Data>>
-
-    fun fetchPart2CityStation(): Single<List<StationResponse.Data>>
-
-    fun fetchPart3CityStation(): Single<List<StationResponse.Data>>
-
-    fun fetchAllCityStationDetail(token: String): Completable
-
-    fun fetchStationDetail(token: String, city: City): Single<StationDetailResponse>
-
-    fun fetchStationDetailById(
+    suspend fun fetchStationDetailByUid(
         token: String,
-        city: City,
+        cityKey: String,
         stationUid: String
-    ): Single<StationDetailResponse>
+    ): Result<StationDetailResponse>
 
-    fun getStationsByLocation(lat: Double, lon: Double): Observable<List<StationEntity>>
+    suspend fun getStationsByLocation(lat: Double, lon: Double): Result<List<StationEntity>>
 
-    fun checkFavoriteIsExist(stationUid: String): Single<Boolean>
+    suspend fun checkFavoriteIsExist(stationUid: String): Result<Boolean>
 
-    fun addFavorite(entity: FavoriteEntity): Completable
+    suspend fun addFavorite(entity: FavoriteEntity): Result<Unit>
 
-    fun removeFavorite(stationUid: String): Completable
+    suspend fun removeFavorite(stationUid: String): Result<Unit>
 
-    fun getAllFavorite(): Single<List<FavoriteEntity>>
+    suspend fun getAllFavorite(): Result<List<FavoriteEntity>>
 }

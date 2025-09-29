@@ -2,13 +2,23 @@ package com.demo.ubike.usecase
 
 import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.repository.HomeRepository
-import io.reactivex.Completable
+import com.demo.ubike.di.IoDispatcher
+import com.demo.ubike.result.Result
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AddFavoriteUseCase @Inject constructor(
+    @IoDispatcher dispatcher: CoroutineDispatcher,
     private val homeRepository: HomeRepository
-) {
-    operator fun invoke(entity: FavoriteEntity): Completable {
-        return homeRepository.addFavorite(entity)
+) : FlowUseCase<AddFavoriteUseCase.Parameters, Unit>(dispatcher) {
+
+    override fun execute(parameters: Parameters): Flow<Result<Unit>> = flow {
+        emit(homeRepository.addFavorite(parameters.entity))
     }
+
+    data class Parameters(
+        val entity: FavoriteEntity
+    )
 }

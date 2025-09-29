@@ -1,8 +1,6 @@
 package com.demo.ubike.di
 
 import android.content.Context
-import androidx.room.Room
-import com.demo.ubike.Config
 import com.demo.ubike.data.local.AppDatabase
 import com.demo.ubike.data.local.favorite.FavoriteDao
 import com.demo.ubike.data.local.station.StationDao
@@ -19,11 +17,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context.applicationContext,
-            AppDatabase::class.java,
-            Config.DATABASE_NAME
-        ).build()
+        return AppDatabase.buildDatabase(context)
     }
 
     @Singleton

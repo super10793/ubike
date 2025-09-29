@@ -21,7 +21,7 @@ class StationResponse : ArrayList<StationResponse.Data>() {
         @SerializedName("AuthorityID")
         val authorityID: String,
         @SerializedName("BikesCapacity")
-        val bikesCapacity: Int,
+        val bikesCapacity: Int? = 0,
         @SerializedName("ServiceType")
         val serviceType: Int,
         @SerializedName("StationPosition")
@@ -29,8 +29,7 @@ class StationResponse : ArrayList<StationResponse.Data>() {
         @SerializedName("StationName")
         val stationName: StationName,
         @SerializedName("StationAddress")
-        val stationAddress: StationAddress,
-        var city: City
+        val stationAddress: StationAddress
     )
 
     /**
@@ -46,7 +45,7 @@ class StationResponse : ArrayList<StationResponse.Data>() {
 
     /**
      * @property zh_tw：中文繁體名稱
-     * @property en 英文名稱(金門不會回傳該值)
+     * @property en 英文名稱
      * */
     data class StationName(
         @SerializedName("Zh_tw")
@@ -56,8 +55,8 @@ class StationResponse : ArrayList<StationResponse.Data>() {
     )
 
     /**
-     * @property zh_tw：中文繁體名稱(金門不會回傳該值)
-     * @property en 英文名稱(金門不會回傳該值)
+     * @property zh_tw：中文繁體名稱
+     * @property en 英文名稱
      * */
     data class StationAddress(
         @SerializedName("Zh_tw")

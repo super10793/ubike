@@ -5,13 +5,12 @@ import android.view.View
 import androidx.databinding.library.baseAdapters.BR
 import androidx.navigation.fragment.findNavController
 import com.demo.ubike.R
-import com.demo.ubike.data.model.ApiResult
 import com.demo.ubike.data.viewmodel.SplashViewModel
 import com.demo.ubike.databinding.FragmentSplashBinding
+import com.demo.ubike.result.EventObserver
 import com.demo.ubike.ui.dialog.ExceptionDialog
 import com.demo.ubike.utils.FirebaseAnalyticsUtil
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -27,35 +26,20 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
         get() = BR.splashViewModel
 
     override fun initObserver() {
-        viewModel.fetchTokenResult.observe(
-            viewLifecycleOwner
-        ) {
-            when (it) {
-                is ApiResult.Success<*> -> {
-                    firebaseAnalyticsUtil.loginEvent()
-                    findNavController().navigate(R.id.homeFragment)
-                }
+        viewModel.fetchTokenSuccess.observe(viewLifecycleOwner, EventObserver {
+            firebaseAnalyticsUtil.loginEvent()
+            findNavController().navigate(R.id.homeFragment)
+        })
 
-                is ApiResult.Fail -> {
-                    val errorMsg =
-                        (it.throwable as? HttpException)?.response()?.errorBody()?.string()
-                            ?: it.throwable.message
-                    val dialog = ExceptionDialog.builder(requireActivity())
-                        .setOneBtn(true)
-                        .setContent(
-                            requireContext().getString(
-                                R.string.api_fail,
-                                errorMsg
-                            )
-                        )
-                        .setConfirmClickListener {
-                            viewModel.fetchTokens()
-                        }
-                        .build()
-                    dialog.show()
-                }
-            }
-        }
+        viewModel.fetchTokenFail.observe(viewLifecycleOwner, EventObserver {
+            val content = getString(R.string.api_fail, it.message.orEmpty())
+            ExceptionDialog.builder(requireActivity())
+                .setOneBtn(true)
+                .setContent(content)
+                .setConfirmClickListener { viewModel.fetchTokens() }
+                .build()
+                .show()
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

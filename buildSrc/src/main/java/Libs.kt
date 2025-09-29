@@ -12,6 +12,8 @@ object Libs {
 
         const val PREFERENCE_KTX = "androidx.preference:preference-ktx:${Version.ANDROIDX.PREFERENCE_KTX}"
 
+        const val DATASTORE = "androidx.datastore:datastore-preferences:${Version.ANDROIDX.DATASTORE}"
+
         object LIFECYCLE {
 
             const val LIVEDATA_KTX = "androidx.lifecycle:lifecycle-livedata-ktx:${Version.ANDROIDX.LIFECYCLE.LIVEDATA_KTX}"
@@ -55,18 +57,7 @@ object Libs {
 
         const val RETROFIT2_GSON = "com.squareup.retrofit2:converter-gson:${Version.SQUARE.RETROFIT2}"
 
-        const val RETROFIT2_RXJAVA = "com.squareup.retrofit2:adapter-rxjava2:${Version.SQUARE.RETROFIT2}"
-
         const val OKHTTP3 = "com.squareup.okhttp3:okhttp:${Version.SQUARE.OKHTTP3}"
-    }
-
-    object REACTIVEX {
-
-        const val RX_JAVA = "io.reactivex.rxjava2:rxjava:${Version.REACTIVEX.RX_JAVA}"
-
-        const val RX_KOTLIN = "io.reactivex.rxjava2:rxkotlin:${Version.REACTIVEX.RX_KOTLIN}"
-
-        const val RX_ANDROID = "io.reactivex.rxjava2:rxandroid:${Version.REACTIVEX.RX_ANDROID}"
     }
 
     object FACEBOOK {
@@ -85,9 +76,5 @@ object Libs {
         const val RUNTIME = "androidx.room:room-runtime:${Version.ROOM}"
         const val COMPILER = "androidx.room:room-compiler:${Version.ROOM}"
         const val KTX = "androidx.room:room-ktx:${Version.ROOM}"
-
-        const val RX_JAVA = "androidx.room:room-rxjava2:${Version.ROOM}"
-
-
     }
 }

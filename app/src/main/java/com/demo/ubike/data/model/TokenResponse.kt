@@ -1,9 +1,16 @@
 package com.demo.ubike.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class TokenResponse(
-    val access_token: String,
-    val expires_in: Int,
-    val refresh_expires_in: Int,
-    val token_type: String,
+    @SerializedName("access_token")
+    val accessToken: String,
+    @SerializedName("expires_in")
+    val expiresIn: Int,
+    @SerializedName("refresh_expires_in")
+    val refreshExpiresIn: Int,
+    @SerializedName("token_type")
+    val tokenType: String,
+    @SerializedName("scope")
     val scope: String
 )

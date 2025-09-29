@@ -47,8 +47,8 @@ class StationDetailView @JvmOverloads constructor(
         ViewModelProvider(findViewTreeViewModelStoreOwner()!!)[MapViewModel::class.java]
     }
 
-    private val stationDetailObserver = EventObserver<StationDetailResponse> {
-        binding.stationDetail = it[0]
+    private val stationDetailObserver = EventObserver<StationDetailResponse.Data> {
+        binding.stationDetail = it
     }
 
     private val isFavoriteObserver =

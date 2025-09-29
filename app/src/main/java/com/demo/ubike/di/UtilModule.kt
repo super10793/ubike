@@ -7,6 +7,8 @@ import com.demo.ubike.utils.FirebaseAnalyticsUtil
 import com.demo.ubike.utils.NetworkUtil
 import com.demo.ubike.utils.SharePreferenceManager
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,5 +41,13 @@ object UtilModule {
     @Provides
     fun provideFirebaseAnalyticsUtil(@ApplicationContext context: Context): FirebaseAnalyticsUtil {
         return FirebaseAnalyticsUtil(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGson(): Gson {
+        return GsonBuilder()
+            .setPrettyPrinting()
+            .create()
     }
 }

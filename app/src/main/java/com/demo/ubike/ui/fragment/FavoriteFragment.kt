@@ -74,10 +74,9 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding, FavoriteViewModel
             }
         )
 
-        viewModel.stationDetails.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                adapter?.updateItem(it[0])
-            }
+        viewModel.stationDetail.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
+            adapter?.updateItem(it)
         }
     }
 

@@ -30,11 +30,23 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_CLIENT_ID_1", "\"${secretsProperties["API_CLIENT_ID_1"]}\"")
-        buildConfigField("String", "API_CLIENT_SECRET_1", "\"${secretsProperties["API_CLIENT_SECRET_1"]}\"")
+        buildConfigField(
+            "String",
+            "API_CLIENT_SECRET_1",
+            "\"${secretsProperties["API_CLIENT_SECRET_1"]}\""
+        )
         buildConfigField("String", "API_CLIENT_ID_2", "\"${secretsProperties["API_CLIENT_ID_2"]}\"")
-        buildConfigField("String", "API_CLIENT_SECRET_2", "\"${secretsProperties["API_CLIENT_SECRET_2"]}\"")
+        buildConfigField(
+            "String",
+            "API_CLIENT_SECRET_2",
+            "\"${secretsProperties["API_CLIENT_SECRET_2"]}\""
+        )
         buildConfigField("String", "API_CLIENT_ID_3", "\"${secretsProperties["API_CLIENT_ID_3"]}\"")
-        buildConfigField("String", "API_CLIENT_SECRET_3", "\"${secretsProperties["API_CLIENT_SECRET_3"]}\"")
+        buildConfigField(
+            "String",
+            "API_CLIENT_SECRET_3",
+            "\"${secretsProperties["API_CLIENT_SECRET_3"]}\""
+        )
 
         manifestPlaceholders["mapsApiKey"] = secretsProperties.getProperty("MAPS_API_KEY")
     }
@@ -116,12 +128,7 @@ dependencies {
 
     implementation(Libs.SQUARE.RETROFIT2)
     implementation(Libs.SQUARE.RETROFIT2_GSON)
-    implementation(Libs.SQUARE.RETROFIT2_RXJAVA)
     implementation(Libs.SQUARE.OKHTTP3)
-
-    implementation(Libs.REACTIVEX.RX_JAVA)
-    implementation(Libs.REACTIVEX.RX_KOTLIN)
-    implementation(Libs.REACTIVEX.RX_ANDROID)
 
     debugImplementation(Libs.FACEBOOK.FLIPPER)
     debugImplementation(Libs.FACEBOOK.SO_LOADER)
@@ -131,9 +138,8 @@ dependencies {
     implementation(Libs.ROOM.RUNTIME)
     ksp(Libs.ROOM.COMPILER)
     implementation(Libs.ROOM.KTX)
-    implementation(Libs.ROOM.RX_JAVA)
 
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
+    implementation(Libs.ANDROIDX.DATASTORE)
 
     implementation(Libs.BLANKJ_UTILS)
 

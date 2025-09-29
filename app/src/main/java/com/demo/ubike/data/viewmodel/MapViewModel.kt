@@ -2,21 +2,23 @@ package com.demo.ubike.data.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.local.station.StationEntity
 import com.demo.ubike.data.model.City
 import com.demo.ubike.data.model.StationDetailResponse
+import com.demo.ubike.result.Event
+import com.demo.ubike.result.Result
 import com.demo.ubike.usecase.AddFavoriteUseCase
 import com.demo.ubike.usecase.FavoriteIsExistUseCase
 import com.demo.ubike.usecase.FetchAllStationAndInsertUseCase
 import com.demo.ubike.usecase.FetchStationDetailUseCase
 import com.demo.ubike.usecase.GetStationsUseCase
 import com.demo.ubike.usecase.RemoveFavoriteUseCase
-import com.demo.ubike.result.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,101 +33,111 @@ class MapViewModel @Inject constructor(
     private val _stations = MutableLiveData<List<StationEntity>>()
     var stations: LiveData<List<StationEntity>> = _stations
 
-    private val _stationDetail = MutableLiveData<Event<StationDetailResponse>>()
-    var stationDetail: LiveData<Event<StationDetailResponse>> = _stationDetail
+    private val _stationDetail = MutableLiveData<Event<StationDetailResponse.Data>>()
+    var stationDetail: LiveData<Event<StationDetailResponse.Data>> = _stationDetail
 
     // first: station的Uid
     // second: 是否為最愛
     private val _isFavorite = MutableLiveData<Event<Pair<String, Boolean>>>()
     var isFavorite: LiveData<Event<Pair<String, Boolean>>> = _isFavorite
 
-    private var disposable: Disposable? = null
+    private var runningJob: Job? = null
 
     fun fetchAllStationAndInsert() {
-        fetchAllStationAndInsertUseCase()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                // nothing
-            }, {
-                throw it
-            })
-            .also {
-                addDisposable(it)
+        fetchAllStationAndInsertUseCase(Unit)
+            .onEach {
+                // todo
             }
+            .launchIn(viewModelScope)
     }
 
     fun getStations(lat: Double, lon: Double) {
-        disposable = getStationsUseCase(lat, lon)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _stations.value = it
-            }, {
-                throw it
-            })
-            .also {
-                addDisposable(it)
+        val parameters = GetStationsUseCase.Parameters(lat, lon)
+        runningJob?.cancel()
+        runningJob = getStationsUseCase(parameters)
+            .onEach { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _stations.value = result.data
+                    }
+
+                    is Result.Error -> {
+                        // todo
+                    }
+                }
             }
+            .launchIn(viewModelScope)
     }
 
     fun cancelGetStations() {
-        disposable?.dispose()
+        runningJob?.cancel()
     }
 
     fun fetchStationDetail(city: City, stationId: String) {
-        fetchStationDetailUseCase.byStationUid(city, stationId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _stationDetail.value = Event(it)
-            }, {
-                throw it
-            })
-            .also {
-                addDisposable(it)
+        val parameters = FetchStationDetailUseCase.Parameters(city.apiKey, stationId)
+        fetchStationDetailUseCase(parameters)
+            .onEach { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _stationDetail.value = Event(result.data)
+                    }
+
+                    is Result.Error -> {
+                        // todo
+                    }
+                }
             }
+            .launchIn(viewModelScope)
     }
 
     fun favoriteIsExist(stationUid: String) {
-        favoriteIsExistUseCase(stationUid)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _isFavorite.value = Event(Pair(stationUid, it))
-            }, {
-                throw it
-            })
-            .also {
-                addDisposable(it)
+        val parameters = FavoriteIsExistUseCase.Parameters(stationUid)
+        favoriteIsExistUseCase(parameters)
+            .onEach { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _isFavorite.value = Event(Pair(stationUid, result.data))
+                    }
+
+                    is Result.Error -> {
+                        // todo
+                    }
+                }
             }
+            .launchIn(viewModelScope)
     }
 
     fun addFavorite(entity: FavoriteEntity) {
-        favoriteAddUseCase(entity)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _isFavorite.value = Event(Pair(entity.stationUID, true))
-            }, {
-                throw it
-            })
-            .also {
-                addDisposable(it)
+        val parameters = AddFavoriteUseCase.Parameters(entity)
+        favoriteAddUseCase(parameters)
+            .onEach { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _isFavorite.value = Event(Pair(entity.stationUID, true))
+                    }
+
+                    is Result.Error -> {
+                        // todo
+                    }
+                }
             }
+            .launchIn(viewModelScope)
     }
 
     fun removeFavorite(stationUid: String) {
-        favoriteRemoveUseCase(stationUid)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                _isFavorite.value = Event(Pair(stationUid, false))
-            }, {
-                throw it
-            })
-            .also {
-                addDisposable(it)
+        val parameters = RemoveFavoriteUseCase.Parameters(stationUid)
+        favoriteRemoveUseCase(parameters)
+            .onEach { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _isFavorite.value = Event(Pair(stationUid, false))
+                    }
+
+                    is Result.Error -> {
+                        // todo
+                    }
+                }
             }
+            .launchIn(viewModelScope)
     }
 }

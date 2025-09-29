@@ -31,6 +31,8 @@ object Version {
 
         const val PREFERENCE_KTX = "1.2.0"
 
+        const val DATASTORE = "1.1.7"
+
         object LIFECYCLE {
 
             const val LIVEDATA_KTX = "2.9.4"

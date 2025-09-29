@@ -5,20 +5,19 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.reactivex.Completable
-import io.reactivex.Single
 
 @Dao
 interface FavoriteDao {
+
     @Query("SELECT * FROM FavoriteEntity")
-    fun getAllFavorite(): Single<List<FavoriteEntity>>
+    suspend fun getAllFavorite(): List<FavoriteEntity>
 
     @Query("SELECT EXISTS (SELECT 1 FROM FavoriteEntity WHERE stationUID = :stationUid)")
-    fun checkFavoriteIsExist(stationUid: String): Single<Boolean>
+    suspend fun checkFavoriteIsExist(stationUid: String): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertFavorite(entity: FavoriteEntity): Completable
+    suspend fun insertFavorite(entity: FavoriteEntity)
 
     @Query("DELETE FROM FavoriteEntity WHERE stationUID = :stationUid")
-    fun removeFavorite(stationUid: String): Completable
+    suspend fun removeFavorite(stationUid: String)
 }

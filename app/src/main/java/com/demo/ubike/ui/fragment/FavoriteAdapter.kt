@@ -136,7 +136,6 @@ class FavoriteAdapter(
         super.onViewDetachedFromWindow(holder)
         val stationUid = holder.binding.favoriteEntity?.stationUID
         stationUid?.let {
-            favoriteViewModel.cancelFetchStationDetail(it)
             visibleItems.remove(it)
         }
         holder.resetPayloads()

@@ -121,13 +121,49 @@
                 android:text="@string/city_pingtungCounty" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_kinmenCounty"
+                android:id="@+id/btn_changhua"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:visibility="invisible"
-                android:text="@string/city_kinmenCounty" />
+                android:text="彰化" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_yunlin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item"
+                android:text="雲林" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_taitung"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item"
+                android:text="台東" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_chiayiCounty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item"
+                android:text="嘉義縣" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item" />
 
         </LinearLayout>
 

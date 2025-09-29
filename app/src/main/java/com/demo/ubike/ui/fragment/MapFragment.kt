@@ -1,7 +1,6 @@
 package com.demo.ubike.ui.fragment
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -10,7 +9,6 @@ import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -33,7 +31,6 @@ import com.demo.ubike.data.model.CustomMarkerOption
 import com.demo.ubike.data.viewmodel.HomeViewModel
 import com.demo.ubike.data.viewmodel.MapViewModel
 import com.demo.ubike.databinding.FragmentMapBinding
-import com.demo.ubike.extension.permission.PermissionCallback
 import com.demo.ubike.extension.view.getStatusBarHeight
 import com.demo.ubike.extension.view.showRouteInGoogleMap
 import com.demo.ubike.ui.view.MarkerView

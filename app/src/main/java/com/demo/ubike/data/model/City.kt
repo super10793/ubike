@@ -5,116 +5,89 @@ import com.google.android.gms.maps.model.LatLngBounds
 
 enum class City(
     val apiKey: String,
-    private val latLngBounds: LatLngBounds,
+    val nickname: String,
     val cityCenter: LatLng
 ) {
     Taipei(
-        "Taipei",
-        LatLngBounds(
-            LatLng(24.3963, 121.4346),
-            LatLng(25.3016, 122.0067)
-        ),
+        apiKey = "Taipei",
+        nickname = "TPE",
         LatLng(25.047763, 121.517088)
     ),
     NewTaipei(
-        "NewTaipei",
-        LatLngBounds(
-            LatLng(24.7269, 121.2828),
-            LatLng(25.2917, 122.0512)
-        ),
+        apiKey = "NewTaipei",
+        nickname = "NWT",
         LatLng(25.008141, 121.464298)
     ),
     Taoyuan(
-        "Taoyuan",
-        LatLngBounds(
-            LatLng(24.5455, 121.0279),
-            LatLng(25.1441, 121.4758)
-        ),
+        apiKey = "Taoyuan",
+        nickname = "TAO",
         LatLng(24.990334, 121.313756)
     ),
     Hsinchu(
-        "Hsinchu",
-        LatLngBounds(
-            LatLng(24.7915, 120.9365),
-            LatLng(24.8646, 121.0234)
-        ),
+        apiKey = "Hsinchu",
+        nickname = "HSZ",
         LatLng(24.803041, 120.968278)
     ),
     HsinchuCounty(
-        "HsinchuCounty",
-        LatLngBounds(
-            LatLng(23.8744, 120.7066),
-            LatLng(24.8449, 121.2926)
-        ),
+        apiKey = "HsinchuCounty",
+        nickname = "HSQ",
         LatLng(24.835535485802463, 121.0092678666115)
     ),
     Miaoli(
-        "MiaoliCounty",
-        LatLngBounds(
-            LatLng(24.3096, 120.6197),
-            LatLng(24.6999, 121.2815)
-        ),
+        apiKey = "MiaoliCounty",
+        nickname = "MIA",
         LatLng(24.567701430750656, 120.82176502794027)
     ),
     Taichung(
-        "Taichung",
-        LatLngBounds(
-            LatLng(24.0259, 120.4428),
-            LatLng(24.3103, 120.8162)
-        ),
+        apiKey = "Taichung",
+        nickname = "TXG",
         LatLng(24.136829, 120.685040)
     ),
     Chiayi(
-        "Chiayi",
-        LatLngBounds(
-            LatLng(24.0259, 120.4428),
-            LatLng(24.3103, 120.8162)
-        ),
-        LatLng(23.47838019836263, 120.44086016714574)
+        apiKey = "Chiayi",
+        nickname = "CYI",
+        LatLng(22.669167, 120.485278)
     ),
     Kaohsiung(
-        "Kaohsiung",
-        LatLngBounds(
-            LatLng(21.8533, 120.1069),
-            LatLng(22.9656, 120.7023)
-        ),
+        apiKey = "Kaohsiung",
+        nickname = "KHH",
         LatLng(22.639548, 120.302877)
     ),
     Tainan(
-        "Tainan",
-        LatLngBounds(
-            LatLng(22.7918, 120.0759),
-            LatLng(23.4113, 120.4659)
-        ),
+        apiKey = "Tainan",
+        nickname = "TNN",
         LatLng(22.99647114137429, 120.21282445639372)
     ),
     Pingtung(
-        "PingtungCounty",
-        LatLngBounds(
-            LatLng(21.5203, 120.3194),
-            LatLng(22.5519, 121.8788)
-        ),
+        apiKey = "PingtungCounty",
+        nickname = "PIF",
         LatLng(22.669167, 120.485278)
+    ),
+
+    Changhua(
+        apiKey = "ChanghuaCounty",
+        nickname = "CHA",
+        LatLng(24.07522, 120.54407)
+    ),
+    Yunlin(
+        apiKey = "YunlinCounty",
+        nickname = "YUN",
+        LatLng(23.695069, 120.525417)
+    ),
+    Taitung(
+        apiKey = "TaitungCounty",
+        nickname = "TTT",
+        LatLng(22.7551, 121.1503)
+    ),
+    ChiayiCounty(
+        apiKey = "ChiayiCounty",
+        nickname = "CYQ",
+        LatLng(23.4592, 120.29395)
     );
 
     companion object {
-        fun part1Cities(): List<City> {
-            return listOf(Taipei, NewTaipei, Taoyuan)
+        fun fromValue(value: String): City {
+            return entries.first { it.nickname.lowercase() == value.lowercase() }
         }
-
-        fun part2Cities(): List<City> {
-            return listOf(HsinchuCounty, Hsinchu, Miaoli, Taichung)
-        }
-
-        fun part3Cities(): List<City> {
-            return listOf(Chiayi, Tainan, Kaohsiung, Pingtung)
-        }
-    }
-
-    fun currentCity(lat: Double, lng: Double): City {
-        val location = LatLng(lat, lng)
-        return values().firstOrNull {
-            it.latLngBounds.contains(location)
-        } ?: Taichung
     }
 }

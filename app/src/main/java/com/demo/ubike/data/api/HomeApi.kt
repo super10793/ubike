@@ -1,13 +1,25 @@
 package com.demo.ubike.data.api
 
-import com.demo.ubike.Config
 import com.demo.ubike.data.model.StationDetailResponse
 import com.demo.ubike.data.model.StationResponse
 import com.demo.ubike.data.model.TokenResponse
-import io.reactivex.Single
-import retrofit2.http.*
+import com.demo.ubike.result.Result
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface HomeApi {
+
+    companion object {
+        private const val GRANT_TYPE = "client_credentials"
+
+        private const val FORMAT = "JSON"
+    }
+
     /**
      * TDX會員可至【會員專區-資料服務-服務金鑰】功能頁面
      * 從預設金鑰(或建立新的金鑰)取得Client Id和Client Secret資訊
@@ -16,40 +28,30 @@ interface HomeApi {
      * */
     @FormUrlEncoded
     @POST("/auth/realms/TDXConnect/protocol/openid-connect/token")
-    fun fetchToken(
-        @Field("grant_type") grantType: String = Config.GRANT_TYPE,
+    suspend fun fetchToken(
+        @Field("grant_type") grantType: String = GRANT_TYPE,
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String
-    ): Single<TokenResponse>
+    ): Result<TokenResponse>
 
     /**
      * * 取得指定[縣市]的公共自行車租借站位資料
      * */
-    @GET
-    fun fetchStation(
-        @Url url: String,
+    @GET("/api/basic/v2/Bike/Station/City/{cityKey}")
+    suspend fun fetchStation(
         @Header("authorization") authorization: String,
-        @Query("\$format") format: String = Config.API_FORMAT,
-    ): Single<StationResponse>
+        @Path("cityKey") cityKey: String,
+        @Query("\$format") format: String = FORMAT,
+    ): Result<StationResponse>
 
     /**
      * * 取得動態指定[縣市]的公共自行車即時車位資料
      * */
-    @GET
-    fun fetchStationDetail(
-        @Url url: String,
+    @GET("/api/basic/v2/Bike/Availability/City/{cityKey}")
+    suspend fun fetchStationDetailById(
         @Header("authorization") authorization: String,
-        @Query("\$format") format: String = Config.API_FORMAT,
-    ): Single<StationDetailResponse>
-
-    /**
-     * * 取得動態指定[縣市]的公共自行車即時車位資料
-     * */
-    @GET
-    fun fetchStationDetailById(
-        @Url url: String,
-        @Header("authorization") authorization: String,
-        @Query("\$format") format: String = Config.API_FORMAT,
+        @Path("cityKey") cityKey: String,
         @Query("\$filter") filter: String,
-    ): Single<StationDetailResponse>
+        @Query("\$format") format: String = FORMAT,
+    ): Result<StationDetailResponse>
 }
