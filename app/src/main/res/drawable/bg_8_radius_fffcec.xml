@@ -1,0 +1,6 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid android:color="@color/station_detail_bg" />
+
+    <corners android:radius="8dp" />
+</shape>

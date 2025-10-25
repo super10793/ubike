@@ -4,22 +4,27 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
-import androidx.databinding.library.baseAdapters.BR
 import com.demo.ubike.R
+import com.demo.ubike.data.viewmodel.MainViewModel
 import com.demo.ubike.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
-    override fun layoutId(): Int = R.layout.activity_main
 
-    override val bindingVariable: Int
-        get() = BR.mainViewModel
+    private val viewModel: MainViewModel by viewModels()
+
+    override val layoutId: Int = R.layout.activity_main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initView()
+    }
+
+    override fun initObserver() {
+        // nothing
     }
 
     private fun initView() {

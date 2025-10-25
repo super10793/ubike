@@ -4,11 +4,12 @@ import com.demo.ubike.Config
 import com.demo.ubike.data.api.HomeApi
 import com.demo.ubike.data.local.favorite.FavoriteDao
 import com.demo.ubike.data.local.favorite.FavoriteEntity
+import com.demo.ubike.data.local.favorite.FavoriteStation
 import com.demo.ubike.data.local.station.StationDao
 import com.demo.ubike.data.local.station.StationEntity
-import com.demo.ubike.data.model.StationDetailResponse
-import com.demo.ubike.data.model.StationResponse
-import com.demo.ubike.data.model.TokenResponse
+import com.demo.ubike.data.model.response.StationDetailListResponse
+import com.demo.ubike.data.model.response.StationListResponse
+import com.demo.ubike.data.model.response.TokenResponse
 import com.demo.ubike.result.Result
 import javax.inject.Inject
 
@@ -28,8 +29,11 @@ class HomeRepositoryImpl @Inject constructor(
         return homeApi.fetchToken(clientId = clientId, clientSecret = clientSecret)
     }
 
-    override suspend fun fetchStation(token: String, cityKey: String): Result<StationResponse> {
-        return homeApi.fetchStation(authorization = token.withBearer(), cityKey = cityKey)
+    override suspend fun fetchStations(
+        token: String,
+        cityKey: String
+    ): Result<StationListResponse> {
+        return homeApi.fetchStations(authorization = token.withBearer(), cityKey = cityKey)
     }
 
     override suspend fun insertStationEntities(entities: List<StationEntity>): Result<Unit> {
@@ -40,12 +44,12 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchStationDetailByUid(
+    override suspend fun fetchStationDetailsByUid(
         token: String,
         cityKey: String,
         stationUid: String
-    ): Result<StationDetailResponse> {
-        return homeApi.fetchStationDetailById(
+    ): Result<StationDetailListResponse> {
+        return homeApi.fetchStationDetails(
             authorization = token.withBearer(),
             cityKey = cityKey,
             filter = stationUid.eqQuery(STATION_UID)
@@ -76,8 +80,12 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addFavorite(entity: FavoriteEntity): Result<Unit> {
+    override suspend fun addFavorite(stationUid: String): Result<Unit> {
         return try {
+            val entity = FavoriteEntity(
+                stationUid = stationUid,
+                addedTimestamp = System.currentTimeMillis()
+            )
             Result.Success(favoriteDao.insertFavorite(entity))
         } catch (e: Exception) {
             Result.Error(e)
@@ -97,6 +105,14 @@ class HomeRepositoryImpl @Inject constructor(
             Result.Success(favoriteDao.getAllFavorite())
         } catch (e: Exception) {
             Result.Error(e)
+        }
+    }
+
+    override suspend fun getFavoriteStations(): Result<List<FavoriteStation>> {
+        return try {
+            Result.Success(favoriteDao.getFavoriteStations())
+        } catch (e: Exception) {
+            Result.Success(emptyList())
         }
     }
 

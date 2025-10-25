@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class FetchTokenUseCase @Inject constructor(
+class FetchTokensUseCase @Inject constructor(
     @IoDispatcher dispatcher: CoroutineDispatcher,
     private val homeRepository: HomeRepository,
     private val dataStoreRepository: DataStoreRepository

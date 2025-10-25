@@ -2,7 +2,7 @@ package com.demo.ubike.ui.fragment
 
 import android.os.Bundle
 import android.view.View
-import androidx.databinding.library.baseAdapters.BR
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.demo.ubike.R
 import com.demo.ubike.data.viewmodel.SplashViewModel
@@ -14,16 +14,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SplashFragment : BaseFragment<FragmentSplashBinding, SplashViewModel>() {
+class SplashFragment : BaseFragment<FragmentSplashBinding>() {
 
     @Inject
     lateinit var firebaseAnalyticsUtil: FirebaseAnalyticsUtil
-    override fun getViewModelClass(): Class<SplashViewModel> = SplashViewModel::class.java
 
-    override fun layoutId(): Int = R.layout.fragment_splash
+    override val layoutId: Int = R.layout.fragment_splash
 
-    override val bindingVariable: Int
-        get() = BR.splashViewModel
+    private val viewModel: SplashViewModel by viewModels()
 
     override fun initObserver() {
         viewModel.fetchTokenSuccess.observe(viewLifecycleOwner, EventObserver {

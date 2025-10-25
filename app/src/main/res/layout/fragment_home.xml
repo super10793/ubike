@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-
-        <import type="android.view.View" />
-
-        <variable
-            name="homeViewModel"
-            type="com.demo.ubike.data.viewmodel.HomeViewModel" />
-
-    </data>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_home"
@@ -32,9 +21,9 @@
             android:id="@+id/nav_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#F0F0F0"
-            app:itemTextColor="@color/selector_bottom"
+            android:background="@color/home_bottom_navigation_bg"
             app:itemIconTint="@color/selector_bottom"
+            app:itemTextColor="@color/selector_bottom"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

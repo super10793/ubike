@@ -1,13 +1,13 @@
-package com.demo.ubike.data.model
+package com.demo.ubike.data.model.response
 
 import com.google.gson.annotations.SerializedName
 
-class StationDetailResponse : ArrayList<StationDetailResponse.Data>() {
+class StationDetailListResponse : ArrayList<StationDetailListResponse.Data>() {
     /**
-     * @property stationUID 站點唯一識別代碼
-     * @property stationID 站點代碼
-     * @property serviceStatus 服務狀態，參考[ServiceStatus]
-     * @property serviceType 服務類型，參考[ServiceType]
+     * @property stationUid 站點唯一識別代碼
+     * @property stationId 站點代碼
+     * @property serviceStatus 服務狀態，參考[com.demo.ubike.data.model.ServiceStatus]
+     * @property serviceType 服務類型，參考[com.demo.ubike.data.model.ServiceType]
      * @property availableRentBikes 可租借車數
      * @property availableReturnBikes 可歸還車數
      * @property availableRentBikesDetail 可租借一般自行車、電動輔助車數量
@@ -16,9 +16,9 @@ class StationDetailResponse : ArrayList<StationDetailResponse.Data>() {
      * */
     data class Data(
         @SerializedName("StationUID")
-        val stationUID: String,
+        val stationUid: String,
         @SerializedName("StationID")
-        val stationID: String,
+        val stationId: String,
         @SerializedName("ServiceStatus")
         val serviceStatus: Int,
         @SerializedName("ServiceType")

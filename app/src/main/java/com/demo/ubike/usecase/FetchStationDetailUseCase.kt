@@ -1,6 +1,7 @@
 package com.demo.ubike.usecase
 
-import com.demo.ubike.data.model.StationDetailResponse
+import com.demo.ubike.data.mapper.StationDetailDataResponseMapper
+import com.demo.ubike.data.model.vo.StationDetailVO
 import com.demo.ubike.data.repository.DataStoreRepository
 import com.demo.ubike.data.repository.HomeRepository
 import com.demo.ubike.di.IoDispatcher
@@ -15,17 +16,22 @@ import javax.inject.Inject
 class FetchStationDetailUseCase @Inject constructor(
     @IoDispatcher dispatcher: CoroutineDispatcher,
     private val homeRepository: HomeRepository,
-    private val dataStoreRepository: DataStoreRepository
-) : FlowUseCase<FetchStationDetailUseCase.Parameters, StationDetailResponse.Data>(dispatcher) {
+    private val dataStoreRepository: DataStoreRepository,
+    private val stationDetailDataResponseMapper: StationDetailDataResponseMapper,
+) : FlowUseCase<FetchStationDetailUseCase.Parameters, StationDetailVO>(dispatcher) {
 
-    override fun execute(parameters: Parameters): Flow<Result<StationDetailResponse.Data>> = flow {
+    override fun execute(parameters: Parameters): Flow<Result<StationDetailVO>> = flow {
         val token = dataStoreRepository.tokensFlow.first().random()
 
-        val result = homeRepository.fetchStationDetailByUid(
+        val response = homeRepository.fetchStationDetailsByUid(
             token = token,
             cityKey = parameters.cityKey,
             stationUid = parameters.stationUid
-        ).map { it.first() }
+        )
+
+        val result = response.map {
+            stationDetailDataResponseMapper.map(it.first())
+        }
 
         emit(result)
     }

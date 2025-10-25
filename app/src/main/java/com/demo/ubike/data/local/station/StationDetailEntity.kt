@@ -6,8 +6,8 @@ import com.demo.ubike.data.model.City
 
 @Entity(tableName = "StationDetailEntity")
 data class StationDetailEntity(
-    @PrimaryKey val stationUID: String,
-    val stationID: String,
+    @PrimaryKey val stationUid: String,
+    val stationId: String,
     val city: City,
     val serviceStatus: Int,
     val serviceType: Int,

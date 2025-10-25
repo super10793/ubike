@@ -7,27 +7,16 @@ package com.demo.ubike.data.model
  * @param 2:'暫停營運'
  * @param 99:'unknown'
  * */
-enum class ServiceStatus(val key: Int) {
+enum class ServiceStatus(val value: Int) {
     Stop(0),
     Normal(1),
     Pause(2),
     Unknown(99);
-}
 
-fun getServiceStatusByKey(key: Int): ServiceStatus {
-    return when (key) {
-        0 -> ServiceStatus.Stop
-        1 -> ServiceStatus.Normal
-        2 -> ServiceStatus.Pause
-        else -> ServiceStatus.Unknown
-    }
-}
+    companion object {
 
-fun getKeyByServiceStatus(status: ServiceStatus): Int {
-    return when (status) {
-        ServiceStatus.Stop -> ServiceStatus.Stop.key
-        ServiceStatus.Normal -> ServiceStatus.Normal.key
-        ServiceStatus.Pause -> ServiceStatus.Pause.key
-        else -> ServiceStatus.Unknown.key
+        fun fromValue(value: Int): ServiceStatus {
+            return entries.find { it.value == value } ?: Unknown
+        }
     }
 }

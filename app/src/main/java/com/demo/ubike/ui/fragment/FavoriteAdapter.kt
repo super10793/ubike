@@ -1,199 +1,98 @@
 package com.demo.ubike.ui.fragment
 
-import android.annotation.SuppressLint
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.demo.ubike.data.local.favorite.CustomPayload
-import com.demo.ubike.data.local.favorite.FavoriteEntity
-import com.demo.ubike.data.model.StationDetailResponse
-import com.demo.ubike.data.viewmodel.FavoriteViewModel
+import com.demo.ubike.data.model.City
+import com.demo.ubike.data.model.vo.FavoriteStationVO
 import com.demo.ubike.databinding.ItemFavoriteBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
-class FavoriteAdapter(
-    private val favoriteViewModel: FavoriteViewModel
-) :
-    RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
-    private var itemClickListener: OnFavoriteItemClickListener? = null
-    private val visibleItems = mutableSetOf<String>()
+class FavoriteAdapter(private val itemClickListener: OnFavoriteItemClickListener) :
+    ListAdapter<FavoriteStationVO, FavoriteAdapter.FavoriteViewHolder>(FavoriteStationVO.Differ) {
 
-    private val differCallback =
-        object : DiffUtil.ItemCallback<FavoriteEntity>() {
-            override fun areItemsTheSame(
-                oldItem: FavoriteEntity,
-                newItem: FavoriteEntity
-            ): Boolean {
-                return oldItem.stationUID == newItem.stationUID
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {
+        val holder = FavoriteViewHolder.from(parent).apply {
+            binding.ivFavorite.setOnClickListener {
+                val pos = bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION } ?: return@setOnClickListener
+                val data = getItem(pos)
+                itemClickListener.onFavoriteRemoveClick(data.stationUid, data.stationNameZhTw)
             }
 
-            override fun areContentsTheSame(
-                oldItem: FavoriteEntity,
-                newItem: FavoriteEntity
-            ): Boolean {
-                val stationUid = (oldItem.stationUID == newItem.stationUID)
-                val authorityId = (oldItem.authorityID == newItem.authorityID)
-                val stationId = (oldItem.stationID == newItem.stationID)
-                val city = (oldItem.city == newItem.city)
-                val bikesCapacity = (oldItem.bikesCapacity == newItem.bikesCapacity)
-                val serviceType = (oldItem.serviceType == newItem.serviceType)
-                val positionLon = (oldItem.positionLon == newItem.positionLon)
-                val positionLat = (oldItem.positionLat == newItem.positionLat)
-                val stationNameZhTw = (oldItem.stationNameZhTw == newItem.stationNameZhTw)
-                val stationNameEn = (oldItem.stationNameEn == newItem.stationNameEn)
-                val stationAddressZhTw = (oldItem.stationAddressZhTw == newItem.stationAddressZhTw)
-                val stationAddressEn = (oldItem.stationAddressEn == newItem.stationAddressEn)
+            binding.cardContent.setOnClickListener {
+                val pos = bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION } ?: return@setOnClickListener
+                val data = getItem(pos)
+                itemClickListener.onFavoriteContentClick(data)
+            }
 
-                return (stationUid && authorityId &&
-                        stationId && city &&
-                        bikesCapacity && serviceType &&
-                        positionLon && positionLat &&
-                        stationNameZhTw && stationNameEn &&
-                        stationAddressZhTw && stationAddressEn)
+            binding.ivNavigation.setOnClickListener {
+                val pos = bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION } ?: return@setOnClickListener
+                val data = getItem(pos)
+                itemClickListener.onGoToGoogleMapClick(data.positionLat, data.positionLon)
             }
         }
 
-    private val asyncListDiffer = AsyncListDiffer(this, differCallback)
-
-    fun submitList(list: List<FavoriteEntity>) {
-        asyncListDiffer.submitList(
-            list.map {
-                it.copy()
-            }
-        )
+        return holder
     }
 
-    fun updateItem(item: StationDetailResponse.Data) {
-        val currentList = asyncListDiffer.currentList.toMutableList()
-        val index = currentList.indexOfFirst { it.stationUID == item.stationUID }
-        if (index != -1) {
-            notifyItemChanged(
-                index, CustomPayload(
-                    stationUid = item.stationUID,
-                    serviceStatus = item.serviceStatus,
-                    availableRentBikes = item.availableRentBikes,
-                    availableReturnBikes = item.availableReturnBikes,
-                    availableRentGeneralBikes = item.availableRentBikesDetail.generalBikes,
-                    availableRentElectricBikes = item.availableRentBikesDetail.electricBikes,
-                    updateTime = item.updateTime
-                )
-            )
-        }
+    override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
+        holder.bind(getItem(position))
     }
 
-    fun setOnItemClickListener(listener: OnFavoriteItemClickListener) {
-        itemClickListener = listener
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder.from(parent)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data = asyncListDiffer.currentList[position]
-        holder.bind(data, favoriteViewModel)
-        holder.binding.ivFavorite.setOnClickListener {
-            itemClickListener?.onFavoriteRemoveClick(data.stationUID, data.stationNameZhTw)
-        }
-
-        holder.binding.cardContent.setOnClickListener {
-            itemClickListener?.onFavoriteContentClick(data)
-        }
-
-        holder.binding.ivNavigation.setOnClickListener {
-            itemClickListener?.onGoToGoogleMapClick(data.positionLat, data.positionLon)
-        }
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
-        if (payloads.isEmpty()) {
-            super.onBindViewHolder(holder, position, payloads)
-        } else {
-            val payload = payloads[0] as? CustomPayload
-            payload?.let {
-                holder.bindPayloads(it)
-            }
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return asyncListDiffer.currentList.size
-    }
-
-    override fun onViewAttachedToWindow(holder: ViewHolder) {
+    override fun onViewAttachedToWindow(holder: FavoriteViewHolder) {
         super.onViewAttachedToWindow(holder)
-        val city = holder.binding.favoriteEntity?.city
-        val stationUid = holder.binding.favoriteEntity?.stationUID
-        if (city != null && stationUid != null) {
-            favoriteViewModel.fetchStationDetail(city, stationUid)
-            visibleItems.add(stationUid)
-        }
+        holder.startCountdown { stationUid, city -> itemClickListener.onRefresh(stationUid, city) }
     }
 
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+    override fun onViewDetachedFromWindow(holder: FavoriteViewHolder) {
         super.onViewDetachedFromWindow(holder)
-        val stationUid = holder.binding.favoriteEntity?.stationUID
-        stationUid?.let {
-            visibleItems.remove(it)
-        }
-        holder.resetPayloads()
-        holder.stopTimer()
+        holder.stopCountdown()
     }
 
-    fun getVisibleItems(): MutableSet<String> = visibleItems
-
-    class ViewHolder private constructor(val binding: ItemFavoriteBinding) :
+    class FavoriteViewHolder private constructor(val binding: ItemFavoriteBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private val countDownMillis = 60000L
-        private val countDownInterval = 1000L
-        private var countDownTimer: CountDownTimer? = null
-        private lateinit var viewModel: FavoriteViewModel
-
-        fun bind(entity: FavoriteEntity, favoriteViewModel: FavoriteViewModel) {
-            viewModel = favoriteViewModel
-            binding.favoriteEntity = entity
-            resetPayloads()
-            binding.executePendingBindings()
-        }
-
-        fun bindPayloads(payload: CustomPayload) {
-            binding.payload = payload
-            startTimer()
-        }
-
-        fun resetPayloads() {
-            binding.payload = CustomPayload()
-        }
-
-        private fun startTimer() {
-            stopTimer()
-            countDownTimer = object : CountDownTimer(countDownMillis, countDownInterval) {
-                @SuppressLint("SetTextI18n")
-                override fun onFinish() {
-                    binding.favoriteEntity?.let {
-                        viewModel.fetchStationDetail(it.city, it.stationUID)
-                    }
-                }
-
-                override fun onTick(millisUntilFinished: Long) {
-                    // 倒數中
-                }
-            }.start()
-        }
-
-        fun stopTimer() {
-            countDownTimer?.cancel()
-            countDownTimer = null
-        }
 
         companion object {
-            fun from(parent: ViewGroup): ViewHolder {
+            private const val REFRESH_SECONDS = 60
+
+            fun from(parent: ViewGroup): FavoriteViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = ItemFavoriteBinding.inflate(layoutInflater, parent, false)
-                return ViewHolder(binding)
+                return FavoriteViewHolder(binding)
             }
+        }
+
+        private var countdownJob: Job? = null
+        private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+        fun bind(vo: FavoriteStationVO) {
+            binding.favoriteStationVO = vo
+        }
+
+        fun startCountdown(onTimeUp: (stationUid: String, city: City) -> Unit) {
+            if (countdownJob?.isActive == true) return
+
+            countdownJob = coroutineScope.launch {
+                while (isActive) {
+                    binding.favoriteStationVO?.let { onTimeUp(it.stationUid, it.city) }
+                    repeat(REFRESH_SECONDS) {
+                        delay(1_000L)
+                        binding.tvRefreshTime.text = (REFRESH_SECONDS - it).toString()
+                    }
+                }
+            }
+        }
+
+        fun stopCountdown() {
+            countdownJob?.cancel()
+            countdownJob = null
         }
     }
 }

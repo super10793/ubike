@@ -14,7 +14,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#96000000">
+        android:background="@color/exception_dialog_bg">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_station"
@@ -40,7 +40,7 @@
                     android:id="@+id/tv_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#46A3FF"
+                    android:background="@color/exception_dialog_title_bg"
                     android:gravity="center"
                     android:padding="15dp"
                     android:textColor="@color/white"

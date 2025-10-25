@@ -3,15 +3,17 @@ package com.demo.ubike.ui.fragment
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
@@ -20,21 +22,26 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
-import androidx.databinding.library.baseAdapters.BR
+import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.viewModels
+import com.blankj.utilcode.util.ToastUtils
 import com.demo.ubike.R
-import com.demo.ubike.data.local.favorite.FavoriteEntity
-import com.demo.ubike.data.local.station.StationEntity
+import com.demo.ubike.data.model.City
 import com.demo.ubike.data.model.CustomMarker
 import com.demo.ubike.data.model.CustomMarkerOption
+import com.demo.ubike.data.model.ServiceType
+import com.demo.ubike.data.model.vo.FavoriteStationVO
+import com.demo.ubike.data.model.vo.StationVO
 import com.demo.ubike.data.viewmodel.HomeViewModel
 import com.demo.ubike.data.viewmodel.MapViewModel
+import com.demo.ubike.databinding.DialogErrorBinding
 import com.demo.ubike.databinding.FragmentMapBinding
+import com.demo.ubike.extension.view.dpToPx
 import com.demo.ubike.extension.view.getStatusBarHeight
+import com.demo.ubike.extension.view.gotToAndroidSettings
 import com.demo.ubike.extension.view.showRouteInGoogleMap
+import com.demo.ubike.result.EventObserver
 import com.demo.ubike.ui.view.MarkerView
-import com.demo.ubike.ui.view.OnStationDetailListener
 import com.demo.ubike.ui.view.StationDetailView
 import com.demo.ubike.ui.view.SupportCityView
 import com.demo.ubike.utils.FirebaseAnalyticsUtil
@@ -56,9 +63,8 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReadyCallback,
-    OnMarkerClickListener, OnCameraIdleListener, OnMapClickListener,
-    OnCameraMoveListener, OnStationDetailListener {
+class MapFragment : BaseFragment<FragmentMapBinding>(), OnMapReadyCallback, OnMarkerClickListener,
+    OnCameraIdleListener, OnMapClickListener, OnCameraMoveListener {
 
     companion object {
         private const val MIN_TIME: Long = 400
@@ -66,6 +72,14 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
         private const val VISIBLE_ZOOM_LEVEL = 12
         private const val CAMERA_ZOOM_LEVEL = 15f
         private const val CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN = 8.1f
+
+        private const val TAIWAN_LAT = 23.617133617023338
+
+        private const val TAIWAN_LNG = 121.0056421905756
+
+        private const val SECURITY_ERROR_MESSAGE = "SecurityException happened"
+
+        private const val GOOGLE_MAP_LOCATION_BUTTON_NAME = "GoogleMapMyLocationButton"
 
         fun newInstance() = MapFragment()
     }
@@ -77,12 +91,11 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
     private var supportMapFragment: SupportMapFragment? = null
     private var locationManager: LocationManager? = null
 
-    private val taiwanLatLng = LatLng(23.617133617023338, 121.0056421905756)
-
     private val pendingMarkers: MutableList<CustomMarkerOption> = mutableListOf()
     private val currentMarkers: MutableList<CustomMarker> = mutableListOf()
-    private var selectFromFavorite: FavoriteEntity? = null
-    private val iconCache = hashMapOf<Pair<Int, Boolean>, Bitmap>()
+    private var selectFromFavorite: FavoriteStationVO? = null
+
+    private val markerBitmaps = hashMapOf<Pair<ServiceType, Boolean>, Bitmap>()
     private var userIsMoving = false
     private var lastClickMarker: Marker? = null
     private val locationListener = object : LocationListener {
@@ -91,11 +104,11 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
             status: Int,
             extras: Bundle?
         ) {
-            // empty
+            // ignored
         }
 
         override fun onProviderEnabled(provider: String) {
-            // empty
+            // ignored
         }
 
         override fun onProviderDisabled(provider: String) {
@@ -122,13 +135,9 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
         }
     }
 
-    override fun getViewModelClass(): Class<MapViewModel> = MapViewModel::class.java
-
-    override fun layoutId(): Int = R.layout.fragment_map
-
-    override val bindingVariable: Int = BR.mapViewModel
-
+    override val layoutId: Int = R.layout.fragment_map
     private val homeViewModel: HomeViewModel by viewModels({ requireParentFragment() })
+    private val viewModel: MapViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -138,6 +147,7 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
         locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
         viewModel.fetchAllStationAndInsert()
         initSearchButton()
+        prepareMarkerBitmaps()
     }
 
     override fun onResume() {
@@ -154,14 +164,14 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
     }
 
     override fun initObserver() {
-        viewModel.stations.observe(viewLifecycleOwner) { stations ->
-            if (googleMap == null || stations == null || stations.isEmpty()) return@observe
+        viewModel.stations.observe(viewLifecycleOwner) { stationVOs ->
+            if (googleMap == null || stationVOs.isNullOrEmpty()) return@observe
 
             // 移除不該出現在地圖上的標記
             val iterator = currentMarkers.iterator()
             while (iterator.hasNext()) {
                 val current = iterator.next()
-                val find = stations.find { current.id == it.stationUID }
+                val find = stationVOs.find { current.id == it.stationUid }
                 if (find == null) {
                     current.marker.remove()
                     iterator.remove()
@@ -173,9 +183,9 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
             * 1.將`flStationDetail`內的view全部移除
             * 2.將`lastClickMarker`還原
             * */
-            val findLastMarker = stations.find {
-                val tag = lastClickMarker?.tag as? StationEntity
-                tag?.stationUID == it.stationUID
+            val findLastMarker = stationVOs.find {
+                val tag = lastClickMarker?.tag as? StationVO
+                tag?.stationUid == it.stationUid
             }
             if (findLastMarker == null) {
                 lastClickMarker = null
@@ -183,14 +193,54 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
             }
 
             pendingMarkers.clear()
-            stations.forEach { entity ->
-                val pos = LatLng(entity.positionLat, entity.positionLon)
-                val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(entity, false))
+            stationVOs.forEach { vo ->
+                val pos = LatLng(vo.positionLat, vo.positionLon)
+                val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(vo, false))
                 val option = MarkerOptions().icon(icon).position(pos)
-                pendingMarkers.add(CustomMarkerOption(entity.stationUID, option, entity))
+                pendingMarkers.add(CustomMarkerOption(vo.stationUid, option, vo))
             }
 
             startAddMarker()
+        }
+
+        viewModel.error.observe(viewLifecycleOwner, EventObserver {
+            val binding = DialogErrorBinding.inflate(layoutInflater)
+            val dialog = AlertDialog.Builder(requireContext())
+                .setCancelable(true)
+                .setView(binding.root)
+                .create()
+
+            dialog.window?.apply {
+                setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+
+                /* `setDimAmount()`讓背景半透明，但設置後無效，要先`clearFlags()`再`addFlags()`才有效 */
+                clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                setDimAmount(0.5f)
+            }
+
+            binding.apply {
+                tvMessage.text = it
+                tvSubmit.setOnClickListener { dialog.dismiss() }
+            }
+
+            dialog.show()
+        })
+
+        viewModel.stationDetail.observe(viewLifecycleOwner) { vo ->
+            val detailView = getStationDetailView() ?: return@observe
+            val stationUid = detailView.tag as? String ?: return@observe
+            if (stationUid != vo.stationUid) return@observe
+
+            detailView.renderStationDetail(vo)
+        }
+
+        viewModel.favoriteState.observe(viewLifecycleOwner) { vo ->
+            val detailView = getStationDetailView() ?: return@observe
+            val stationUid = detailView.tag as? String ?: return@observe
+            if (stationUid != vo.stationUid) return@observe
+
+            detailView.renderFavoriteState(vo)
         }
 
         homeViewModel.favoriteItemClicked.observe(viewLifecycleOwner) {
@@ -207,15 +257,15 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
             val alreadyOnMap = currentMarkers.find { it.id == first.id } != null
             if (!alreadyOnMap) {
                 googleMap?.addMarker(first.markerOptions)?.also {
-                    it.tag = first.stationEntity
-                    currentMarkers.add(CustomMarker(first.stationEntity.stationUID, it))
+                    it.tag = first.stationVO
+                    currentMarkers.add(CustomMarker(first.stationVO.stationUid, it))
                 }
             }
 
             // auto click marker when favorite fragment click some item
             selectFromFavorite?.let { favorite ->
                 currentMarkers.find {
-                    it.id == favorite.stationUID
+                    it.id == favorite.stationUid
                 }?.also {
                     onMarkerClick(it.marker)
                     selectFromFavorite = null
@@ -226,65 +276,70 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
         }
     }
 
-    private fun getMarkerBitmap(entity: StationEntity, highlight: Boolean): Bitmap {
-        val cache = iconCache[Pair(entity.serviceType, highlight)]
-        /*
-        * 產生Bitmap目前只需要`entity.serviceType`加上`highlight`變數
-        * `serviceType`只有5種可能，`highlight`有2種可能
-        * 因所有組合不多，所以將產生過的icon存起來，如果有就直接回傳使用:)
-        * */
-        if (cache != null) return cache
-
-        val view = MarkerView(
-            context = requireContext(),
-            stationEntity = entity,
-            needHighlight = highlight
-        )
-        val iconGenerator = IconGenerator(requireContext())
-        iconGenerator.setContentView(view)
-        iconGenerator.setBackground(null)
-        val result = iconGenerator.makeIcon()
-        iconCache[Pair(entity.serviceType, highlight)] = result
-        return result
-    }
-
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
+
+        /* setting listener */
         this.googleMap?.setOnMarkerClickListener(this)
         this.googleMap?.setOnMapClickListener(this)
         this.googleMap?.setOnCameraMoveListener(this)
         this.googleMap?.setOnCameraIdleListener(this)
-        changeMapDefaultUi()
+
+        /* adjust uiSettings */
+        googleMap.uiSettings.isMapToolbarEnabled = false
+        googleMap.uiSettings.isRotateGesturesEnabled = false
+
         checkPermissions()
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        val tag = marker.tag as? StationEntity
-        val detailView = viewDataBinding.flStationDetail.findViewWithTag<View>(tag?.stationUID)
+        val tag = marker.tag as? StationVO ?: return false
+        val detailView = viewDataBinding.flStationDetail.findViewWithTag<View>(tag.stationUid)
 
         // 如果重複點擊同個標記，就不需要再次addView
-        if (tag != null && detailView == null) {
-            firebaseAnalyticsUtil.markerClickEvent(tag.stationUID, tag.stationNameZhTw)
-            val highlightIcon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, true))
-            marker.setIcon(highlightIcon)
+        if (detailView != null) return false
 
-            restoreLastMarker()
-            lastClickMarker = marker
+        firebaseAnalyticsUtil.markerClickEvent(tag.stationUid, tag.stationNameZhTw)
+        val highlightIcon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, true))
+        marker.setIcon(highlightIcon)
 
-            val customView = StationDetailView(
-                context = requireContext(),
-                station = tag,
-                listener = this
-            )
-            customView.tag = tag.stationUID
-            viewDataBinding.flStationDetail.removeAllViews()
-            viewDataBinding.flStationDetail.addView(customView)
-            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.bottom_up)
-            customView.clearAnimation()
-            customView.startAnimation(animation)
-            viewModel.fetchStationDetail(tag.city, tag.stationUID)
+        restoreLastMarker()
+        lastClickMarker = marker
+
+        val stationDetailView = StationDetailView(requireContext()).apply {
+            this.tag = tag.stationUid
+            this.renderStation(tag)
+            this.setOnStationDetailListener(object : StationDetailView.OnStationDetailListener {
+                override fun onClose() {
+                    restoreLastMarker()
+                }
+
+                override fun onRefreshStationDetail() {
+                    viewModel.fetchStationDetail(tag.city, tag.stationUid)
+                }
+
+                override fun onNavigationClick(lat: Double, lon: Double) {
+                    requireContext().showRouteInGoogleMap(lat = lat, lon = lon)
+                }
+
+                override fun onFavoriteAddClick(stationUid: String) {
+                    viewModel.addFavorite(stationUid)
+                }
+
+                override fun onFavoriteRemoveClick(stationUid: String) {
+                    viewModel.removeFavorite(stationUid)
+                }
+            })
         }
 
+        viewDataBinding.flStationDetail.removeAllViews()
+        viewDataBinding.flStationDetail.addView(stationDetailView)
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.bottom_up)
+        stationDetailView.clearAnimation()
+        stationDetailView.startAnimation(animation)
+
+        /* fetch api */
+        viewModel.favoriteIsExist(tag.stationUid)
         return false
     }
 
@@ -312,7 +367,6 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
 
     override fun onCameraMove() {
         userIsMoving = true
-        viewModel.cancelGetStations()
     }
 
     override fun onMapClick(latLng: LatLng) {
@@ -320,25 +374,13 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
         restoreLastMarker()
     }
 
-    override fun onStationDetailClose() {
-        restoreLastMarker()
-    }
-
-    override fun onGoToGoogleMapClick(lat: Double, lon: Double) {
-        requireContext().showRouteInGoogleMap(lat, lon)
-    }
-
     private fun restoreLastMarker() {
-        val lastMarkerUid = (lastClickMarker?.tag as? StationEntity)?.stationUID
-        val target = currentMarkers.firstOrNull { it.id == lastMarkerUid }
-        target?.apply {
-            val tag = this.marker.tag as? StationEntity
-            tag?.let {
-                val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, false))
-                this.marker.setIcon(icon)
-            }
-            lastClickMarker = null
-        }
+        val lastMarkerUid = (lastClickMarker?.tag as? StationVO)?.stationUid
+        val target = currentMarkers.firstOrNull { it.id == lastMarkerUid } ?: return
+        val tag = target.marker.tag as? StationVO ?: return
+        val icon = BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(tag, false))
+        target.marker.setIcon(icon)
+        lastClickMarker = null
     }
 
     private fun checkPermissions() {
@@ -372,7 +414,12 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
                 permissionLauncher.launch(deniedPermissions.toTypedArray())
             }
         }
+    }
 
+    private fun getStationDetailView(): StationDetailView? {
+        val container = viewDataBinding.flStationDetail
+        if (container.childCount <= 0) return null
+        return container.getChildAt(container.childCount - 1) as? StationDetailView
     }
 
     private fun moveToCurrentLocation() {
@@ -384,37 +431,33 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
                 locationListener
             )
         } catch (e: SecurityException) {
-            println(e)
+            e.printStackTrace()
+            firebaseAnalyticsUtil.exceptionEvent(e.message ?: SECURITY_ERROR_MESSAGE)
         }
     }
 
     private fun moveCameraToTaiwan() {
         googleMap?.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
-                taiwanLatLng,
+                LatLng(TAIWAN_LAT, TAIWAN_LNG),
                 CAMERA_ZOOM_LEVEL_CONTAIN_TAIWAN
             )
         )
         onSearchBtnClick(true)
     }
 
+    /* 調整「我當前位置」按鈕位置，設定在右下角 */
     private fun changeMapDefaultUi() {
-        // 調整「我當前位置」按鈕位置，設定在右下角
         val mapView = supportMapFragment?.requireView()
-        val myLocationButtonTagName = "GoogleMapMyLocationButton"
-        val locationButton = mapView?.findViewWithTag<View>(myLocationButtonTagName)
-        locationButton?.let {
-            val layoutParams = it.layoutParams as RelativeLayout.LayoutParams
+        val locationButton = mapView?.findViewWithTag<View>(GOOGLE_MAP_LOCATION_BUTTON_NAME)
+        /* FIXME: 按鈕位置有機率沒更新，先用`post`觀察看看 */
+        ((locationButton?.parent) as? ViewGroup)?.post {
+            val layoutParams = locationButton.layoutParams as RelativeLayout.LayoutParams
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
             layoutParams.setMargins(0, 0, 30, 30)
+            locationButton.layoutParams = layoutParams
         }
-
-        // 點marker時隱藏導航按鈕
-        googleMap?.uiSettings?.isMapToolbarEnabled = false
-
-        // 禁止旋轉地圖
-        googleMap?.uiSettings?.isRotateGesturesEnabled = false
     }
 
     private fun initSearchButton() {
@@ -442,25 +485,27 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
             // set icon
             viewDataBinding.ivSearch.setImageResource(R.drawable.close)
 
-            // add view
-            val customView = SupportCityView(
-                context = requireContext(),
-                onCityClick = {
-                    val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
-                        it.cityCenter,
-                        CAMERA_ZOOM_LEVEL
-                    )
-                    googleMap?.moveCamera(cameraUpdate)
-                    firebaseAnalyticsUtil.supportCityClickEvent(it.apiKey)
-                },
-                onGoToSettingClick = {
-                    gotToAndroidSettings()
-                    firebaseAnalyticsUtil.goToSettingClick()
-                }
-            )
+            val supportCityView = SupportCityView(requireContext()).apply {
+                setOnSupportCityListener(object : SupportCityView.OnSupportCityListener {
+                    override fun onCityClick(city: City) {
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(
+                            city.cityCenter,
+                            CAMERA_ZOOM_LEVEL
+                        )
+                        googleMap?.moveCamera(cameraUpdate)
+                        firebaseAnalyticsUtil.supportCityClickEvent(city.apiKey)
+                    }
+
+                    override fun onGoToSettingClick() {
+                        requireContext().gotToAndroidSettings()
+                        firebaseAnalyticsUtil.goToSettingClick()
+                    }
+                })
+            }
+
             val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.expand_search)
-            viewDataBinding.flSupportCity.addView(customView)
-            customView.startAnimation(anim)
+            viewDataBinding.flSupportCity.addView(supportCityView)
+            supportCityView.startAnimation(anim)
         } else {
             // set icon
             viewDataBinding.ivSearch.setImageResource(R.drawable.search)
@@ -487,18 +532,14 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
         }
     }
 
-    private fun gotToAndroidSettings() {
-        val uri = "package:${requireContext().packageName}".toUri()
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        requireContext().startActivity(intent)
-    }
 
     private fun GoogleMap.isMyLocationEnabled(enable: Boolean) {
         try {
             this.isMyLocationEnabled = enable
+            changeMapDefaultUi()
         } catch (e: SecurityException) {
-            println(e)
+            e.printStackTrace()
+            firebaseAnalyticsUtil.exceptionEvent(e.message ?: SECURITY_ERROR_MESSAGE)
         }
     }
 
@@ -514,5 +555,43 @@ class MapFragment : BaseFragment<FragmentMapBinding, MapViewModel>(), OnMapReady
                 permission
             ) == PackageManager.PERMISSION_GRANTED
         }
+    }
+
+    private fun prepareMarkerBitmaps() {
+        ServiceType.entries.forEach { type ->
+            listOf(false, true).forEach { light ->
+                val iconGenerator = IconGenerator(requireContext()).apply {
+                    setBackground(null)
+                    setContentView(MarkerView(requireContext()).apply { initView(type, light) })
+                }
+                markerBitmaps[Pair(type, light)] = iconGenerator.makeIcon()
+            }
+        }
+    }
+
+    private fun getMarkerBitmap(stationVO: StationVO, light: Boolean): Bitmap {
+        val type = stationVO.serviceType
+        val bitmap = markerBitmaps[Pair(type, light)]
+        return if (bitmap != null) {
+            bitmap
+        } else {
+            /* should not happened */
+            val iconGenerator = IconGenerator(requireContext()).apply {
+                setBackground(null)
+                setContentView(MarkerView(requireContext()).apply { initView(type, light) })
+            }
+            iconGenerator.makeIcon()
+        }
+    }
+
+    private fun showToast(content: String) {
+        val ctx = context ?: return
+        ToastUtils.cancel()
+        ToastUtils.make()
+            .setBgColor(ContextCompat.getColor(ctx, R.color.toast_bg))
+            .setTextColor(ContextCompat.getColor(ctx, R.color.white))
+            .setGravity(Gravity.BOTTOM, 0, ctx.dpToPx(60))
+            .setDurationIsLong(false)
+            .show(content)
     }
 }

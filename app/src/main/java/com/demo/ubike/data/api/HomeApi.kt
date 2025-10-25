@@ -1,8 +1,8 @@
 package com.demo.ubike.data.api
 
-import com.demo.ubike.data.model.StationDetailResponse
-import com.demo.ubike.data.model.StationResponse
-import com.demo.ubike.data.model.TokenResponse
+import com.demo.ubike.data.model.response.StationDetailListResponse
+import com.demo.ubike.data.model.response.StationListResponse
+import com.demo.ubike.data.model.response.TokenResponse
 import com.demo.ubike.result.Result
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -38,20 +38,20 @@ interface HomeApi {
      * * 取得指定[縣市]的公共自行車租借站位資料
      * */
     @GET("/api/basic/v2/Bike/Station/City/{cityKey}")
-    suspend fun fetchStation(
+    suspend fun fetchStations(
         @Header("authorization") authorization: String,
         @Path("cityKey") cityKey: String,
         @Query("\$format") format: String = FORMAT,
-    ): Result<StationResponse>
+    ): Result<StationListResponse>
 
     /**
      * * 取得動態指定[縣市]的公共自行車即時車位資料
      * */
     @GET("/api/basic/v2/Bike/Availability/City/{cityKey}")
-    suspend fun fetchStationDetailById(
+    suspend fun fetchStationDetails(
         @Header("authorization") authorization: String,
         @Path("cityKey") cityKey: String,
         @Query("\$filter") filter: String,
         @Query("\$format") format: String = FORMAT,
-    ): Result<StationDetailResponse>
+    ): Result<StationDetailListResponse>
 }

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.Settings
 import android.view.Gravity
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.blankj.utilcode.util.ToastUtils
 import com.demo.ubike.R
 
@@ -20,7 +21,7 @@ fun Context.dpToPx(dp: Float): Float {
 }
 
 fun Context.showRouteInGoogleMap(lat: Double, lon: Double) {
-    val gmmIntentUri = Uri.parse("http://maps.google.com/maps?saddr=&daddr=$lat,$lon")
+    val gmmIntentUri = "http://maps.google.com/maps?saddr=&daddr=$lat,$lon".toUri()
     val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
     mapIntent.setPackage("com.google.android.apps.maps")
     if (mapIntent.resolveActivity(packageManager) != null) {
@@ -36,9 +37,16 @@ fun Context.showRouteInGoogleMap(lat: Double, lon: Double) {
     }
 }
 
-fun Context.getDeviceId(): String {
+fun Context.getAppDeviceId(): String {
     return Settings.Secure.getString(
         this.contentResolver,
         Settings.Secure.ANDROID_ID
     )
+}
+
+fun Context.gotToAndroidSettings() {
+    val uri = "package:${this.packageName}".toUri()
+    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri)
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    this.startActivity(intent)
 }

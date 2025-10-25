@@ -1,4 +1,4 @@
-package com.demo.ubike.data.model
+package com.demo.ubike.data.model.response
 
 import com.google.gson.annotations.SerializedName
 

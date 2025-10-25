@@ -1,6 +1,5 @@
 package com.demo.ubike.usecase
 
-import com.demo.ubike.data.local.favorite.FavoriteEntity
 import com.demo.ubike.data.repository.HomeRepository
 import com.demo.ubike.di.IoDispatcher
 import com.demo.ubike.result.Result
@@ -15,10 +14,10 @@ class AddFavoriteUseCase @Inject constructor(
 ) : FlowUseCase<AddFavoriteUseCase.Parameters, Unit>(dispatcher) {
 
     override fun execute(parameters: Parameters): Flow<Result<Unit>> = flow {
-        emit(homeRepository.addFavorite(parameters.entity))
+        emit(homeRepository.addFavorite(parameters.stationUid))
     }
 
     data class Parameters(
-        val entity: FavoriteEntity
+        val stationUid: String
     )
 }

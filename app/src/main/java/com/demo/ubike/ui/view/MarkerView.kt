@@ -1,29 +1,22 @@
 package com.demo.ubike.ui.view
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import com.demo.ubike.R
-import com.demo.ubike.data.local.station.StationEntity
 import com.demo.ubike.data.model.ServiceType
-import com.demo.ubike.data.model.getServiceTypeByKey
 import com.demo.ubike.databinding.ViewMarkerBinding
 import com.demo.ubike.extension.view.dpToPx
 import com.demo.ubike.extension.view.visible
 
-@SuppressLint("ViewConstructor")
 class MarkerView @JvmOverloads constructor(
     private val context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    private val stationEntity: StationEntity,
-    private val needHighlight: Boolean
+    defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     private val binding: ViewMarkerBinding = ViewMarkerBinding.inflate(
         LayoutInflater.from(context),
@@ -32,15 +25,17 @@ class MarkerView @JvmOverloads constructor(
     )
 
     init {
-        initView()
-        if (needHighlight) highlight()
+        layoutParams = LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT
+        )
     }
 
-    private fun initView() {
+    fun initView(serviceType: ServiceType, light: Boolean) {
         val imageView = binding.ivCircle
         val color = ContextCompat.getColor(
             context,
-            when (getServiceTypeByKey(stationEntity.serviceType)) {
+            when (serviceType) {
                 ServiceType.UBike1_0 -> R.color.u_bike_1
                 ServiceType.UBike2_0 -> R.color.u_bike_2
                 ServiceType.TBike -> R.color.t_bike
@@ -50,6 +45,8 @@ class MarkerView @JvmOverloads constructor(
             }
         )
         ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(color))
+
+        if (light) highlight()
     }
 
     private fun highlight() {

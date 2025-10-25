@@ -4,26 +4,24 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.ViewModelProvider
-import com.demo.ubike.data.viewmodel.MainViewModel
 
-abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity() {
-    private var _viewDataBinding: T? = null
-    val viewDataBinding get() = _viewDataBinding!!
+abstract class BaseActivity<VB : ViewDataBinding> : AppCompatActivity() {
+    private var _viewDataBinding: VB? = null
+    val viewDataBinding
+        get() = requireNotNull(_viewDataBinding) {
+            "ViewDataBinding accessed before onCreate or after onDestroy."
+        }
 
+    abstract val layoutId: Int
 
-    protected val viewModel: MainViewModel by
-    lazy { ViewModelProvider(this)[MainViewModel::class.java] }
-
-    abstract fun layoutId(): Int
-
-    abstract val bindingVariable: Int
+    abstract fun initObserver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _viewDataBinding = DataBindingUtil.setContentView(this, layoutId())
-        _viewDataBinding!!.setVariable(bindingVariable, viewModel)
-        _viewDataBinding!!.lifecycleOwner = this
+        _viewDataBinding = DataBindingUtil.setContentView<VB>(this, layoutId).apply {
+            lifecycleOwner = this@BaseActivity
+        }
+        initObserver()
     }
 
     override fun onDestroy() {

@@ -6,9 +6,9 @@ import com.demo.ubike.data.model.City
 
 @Entity(tableName = "StationEntity")
 data class StationEntity(
-    @PrimaryKey val stationUID: String,
-    val stationID: String,
-    val authorityID: String,
+    @PrimaryKey val stationUid: String,
+    val stationId: String,
+    val authorityId: String,
     val city: City,
     val bikesCapacity: Int,
     val serviceType: Int,

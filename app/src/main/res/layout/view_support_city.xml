@@ -8,10 +8,11 @@
 
     </data>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <merge
+        tools:layout_height="wrap_content"
+        tools:layout_width="match_parent"
+        tools:orientation="vertical"
+        tools:parentTag="android.widget.LinearLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,7 +25,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_taipei" />
+                android:text="@string/city_taipei"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_newTaipei"
@@ -32,7 +35,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_newTaipei" />
+                android:text="@string/city_newTaipei"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_taoyuan"
@@ -40,7 +45,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_taoyuan" />
+                android:text="@string/city_taoyuan"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_hsinchu"
@@ -48,14 +55,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_hsinchu" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                android:text="@string/city_hsinchu"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_hsinchuCounty"
@@ -63,7 +65,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_hsinchuCounty" />
+                android:text="@string/city_hsinchuCounty"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_miaoliCounty"
@@ -71,7 +82,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_miaoliCounty" />
+                android:text="@string/city_miaoliCounty"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_taichung"
@@ -79,46 +92,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_taichung" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_chiayi"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_chiayi" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_kaohsiung"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_kaohsiung" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_tainan"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_tainan" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_pingtungCounty"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/selector_support_city_item"
-                android:text="@string/city_pingtungCounty" />
+                android:text="@string/city_taichung"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_changhua"
@@ -126,7 +102,29 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="彰化" />
+                android:text="@string/city_changhua"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_yunlin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item"
+                android:text="@string/city_yunlinCounty"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_chiayi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item"
+                android:text="@string/city_chiayi"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
         </LinearLayout>
 
@@ -136,12 +134,44 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_yunlin"
+                android:id="@+id/btn_chiayiCounty"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="雲林" />
+                android:text="@string/city_chiayiCounty"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_kaohsiung"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item"
+                android:text="@string/city_kaohsiung"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_tainan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item"
+                android:text="@string/city_tainan"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_pingtungCounty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_support_city_item"
+                android:text="@string/city_pingtungCounty"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_taitung"
@@ -149,21 +179,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/selector_support_city_item"
-                android:text="台東" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_chiayiCounty"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/selector_support_city_item"
-                android:text="嘉義縣" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/selector_support_city_item" />
+                android:text="@string/city_taitung"
+                android:textSize="15dp"
+                tools:ignore="SpUsage" />
 
         </LinearLayout>
 
@@ -176,6 +194,6 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-    </LinearLayout>
+    </merge>
 
 </layout>

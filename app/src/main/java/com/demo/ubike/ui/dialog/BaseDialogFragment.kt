@@ -1,4 +1,4 @@
-package com.demo.ubike.ui.fragment
+package com.demo.ubike.ui.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 
-abstract class BaseFragment<VB : ViewDataBinding> : Fragment() {
+abstract class BaseDialogFragment<VB : ViewDataBinding> : DialogFragment() {
     private var _viewDataBinding: VB? = null
     val viewDataBinding
         get() = requireNotNull(_viewDataBinding) {
@@ -16,10 +16,12 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment() {
         }
 
     abstract val layoutId: Int
+
     abstract fun initObserver()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _viewDataBinding = DataBindingUtil.inflate<VB>(
@@ -30,7 +32,6 @@ abstract class BaseFragment<VB : ViewDataBinding> : Fragment() {
         ).apply {
             lifecycleOwner = viewLifecycleOwner
         }
-
         return viewDataBinding.root
     }
 

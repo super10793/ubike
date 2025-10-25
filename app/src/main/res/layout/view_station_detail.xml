@@ -6,279 +6,289 @@
     <data>
 
         <variable
-            name="stationEntity"
-            type="com.demo.ubike.data.local.station.StationEntity" />
+            name="stationVO"
+            type="com.demo.ubike.data.model.vo.StationVO" />
 
         <variable
-            name="stationDetail"
-            type="com.demo.ubike.data.model.StationDetailResponse.Data" />
+            name="stationDetailVO"
+            type="com.demo.ubike.data.model.vo.StationDetailVO" />
 
         <variable
-            name="isFavorite"
-            type="Boolean" />
+            name="favoriteExistVO"
+            type="com.demo.ubike.data.model.vo.FavoriteExistVO" />
 
     </data>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_station"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:alpha="0.95"
-        android:animateLayoutChanges="true"
-        android:background="@android:color/transparent"
-        android:clickable="true"
-        android:focusable="true"
-        app:cardBackgroundColor="#FFFCEC"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <merge
+        tools:background="@drawable/bg_8_radius_fffcec"
+        tools:layout_height="wrap_content"
+        tools:layout_width="match_parent"
+        tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_favorite"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginHorizontal="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_title"
+            app:setFavoriteState="@{favoriteExistVO}"
+            tools:src="@drawable/favorite_border" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_navigation"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginHorizontal="10dp"
+            android:src="@drawable/navigation"
+            app:layout_constraintBottom_toBottomOf="@id/tv_address"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_address" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:formatStationName="@{stationVO.stationNameZhTw}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_favorite"
+            app:layout_constraintTop_toBottomOf="@id/btn_close"
+            tools:ignore="SpUsage"
+            tools:text="YouBike2.0_捷運科技大樓站捷運科技大樓站捷運科技大樓站捷運科技大樓站" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_address"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="@{stationVO.stationAddressZhTw}"
+            android:textColor="@color/station_detail_address_txt"
+            android:textSize="15dp"
+            app:invisibleIfContentInvalid="@{stationVO.stationAddressZhTw}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            tools:ignore="SpUsage"
+            tools:text="捷運科技大樓站捷運科技大樓站捷運科技大樓站捷運科技大" />
+
+        <View
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/station_detail_line"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_address" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_bikes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toBottomOf="@id/cl_bike_detail"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cl_bike_detail"
+            app:stationBikesText="@{stationDetailVO}"
+            tools:ignore="SpUsage"
+            tools:text="可租借：100" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:minHeight="200dp">
+            android:id="@+id/cl_bike_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/station_type_bg"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="10dp"
+            app:layout_constraintStart_toEndOf="@id/tv_bikes"
+            app:layout_constraintTop_toBottomOf="@id/line1">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_favorite"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_marginHorizontal="10dp"
-                app:isFavorite="@{isFavorite}"
-                app:layout_constraintBottom_toBottomOf="@id/tv_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_title"
-                tools:src="@drawable/favorite_border" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_navigation"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_marginHorizontal="10dp"
-                android:src="@drawable/navigation"
-                app:layout_constraintBottom_toBottomOf="@id/tv_address"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_address" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="5dp"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                app:formatStationName="@{stationEntity.stationNameZhTw}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_favorite"
-                app:layout_constraintTop_toBottomOf="@id/btn_close"
-                tools:ignore="SpUsage"
-                tools:text="YouBike2.0_捷運科技大樓站捷運科技大樓站捷運科技大樓站捷運科技大樓站" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_address"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:text="@{stationEntity.stationAddressZhTw}"
-                android:textColor="#6C6C6C"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tv_title"
-                app:layout_constraintTop_toBottomOf="@id/tv_title"
-                app:invisibleIfContentInvalid="@{stationEntity.stationAddressZhTw}"
-                tools:text="捷運科技大樓站捷運科技大樓站捷運科技大樓站捷運科技大" />
-
-            <View
-                android:id="@+id/line1"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginTop="10dp"
-                android:background="#E0E0E0"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_address" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_bikes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/line1"
-                app:stationBikesText="@{stationDetail}"
-                tools:ignore="SpUsage"
-                tools:text="可租借：100" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_bike_detail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:background="@drawable/station_type_bg"
-                android:paddingHorizontal="15dp"
-                android:paddingVertical="5dp"
-                app:layout_constraintStart_toEndOf="@id/tv_bikes"
-                app:layout_constraintTop_toTopOf="@id/tv_bikes">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iv_normal_bike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/normal_bike"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:stationIconColor="@{stationEntity.serviceType}"
-                    tools:tint="@color/white" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_normal_bike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_normal_bike"
-                    app:layout_constraintStart_toEndOf="@id/iv_normal_bike"
-                    app:layout_constraintTop_toTopOf="@id/iv_normal_bike"
-                    app:normalBikesCount="@{stationDetail.availableRentBikesDetail.generalBikes}"
-                    app:stationType="@{stationDetail.serviceType}"
-                    tools:ignore="SpUsage"
-                    tools:text="YouBike 2.0" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iv_electric_bike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/electric_bike"
-                    android:tint="#F75000"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/iv_normal_bike" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_electric_bike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textColor="#F75000"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    app:electricBikesCount="@{stationDetail.availableRentBikesDetail.electricBikes}"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_electric_bike"
-                    app:layout_constraintStart_toEndOf="@id/iv_electric_bike"
-                    app:layout_constraintTop_toTopOf="@id/iv_electric_bike"
-                    tools:ignore="SpUsage"
-                    tools:text="@string/electric_bike" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <View
-                android:id="@+id/line2"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginTop="10dp"
-                android:background="#E0E0E0"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cl_bike_detail" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_bike_return"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="40dp"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/line2"
-                app:stationReturnBikeText="@{stationDetail}"
-                tools:ignore="SpUsage"
-                tools:text="可歸還：100" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_update_time"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:textColor="@color/black"
-                android:textSize="10dp"
-                app:formatUpdateTime="@{stationDetail.updateTime}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_bike_return"
-                tools:ignore="SpUsage"
-                tools:text="資料更新時間：2023-05-12 20:09:36" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_block"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="@drawable/station_detail_block_bg"
-                android:padding="20dp"
-                android:src="@drawable/block"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:showBlockImage="@{stationDetail}" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/tv_status_light"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:statusLight="@{stationDetail.serviceStatus}"
-                tools:src="@drawable/status_normal_circle" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="3dp"
-                android:gravity="center_vertical"
-                android:textColor="@color/black"
-                android:textSize="15dp"
-                app:layout_constraintBottom_toBottomOf="@id/tv_status_light"
-                app:layout_constraintStart_toEndOf="@id/tv_status_light"
-                app:layout_constraintTop_toTopOf="@id/tv_status_light"
-                app:stationStatusText="@{stationDetail.serviceStatus}"
-                tools:ignore="SpUsage"
-                tools:text="正常營運" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_close"
+                android:id="@+id/iv_normal_bike"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/cancel"
-                app:layout_constraintBottom_toBottomOf="@id/tv_status"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_status" />
+                android:src="@drawable/normal_bike"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:stationIconColor="@{stationVO.serviceType}"
+                tools:tint="@color/white" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_normal_bike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/iv_normal_bike"
+                app:layout_constraintStart_toEndOf="@id/iv_normal_bike"
+                app:layout_constraintTop_toTopOf="@id/iv_normal_bike"
+                app:normalBikesCount="@{stationDetailVO.canRentGeneralBikes}"
+                app:serviceType="@{stationDetailVO.serviceType}"
+                tools:ignore="SpUsage"
+                tools:text="99" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_electric_bike"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/normal_bike"
+                android:tint="@color/electric_bike_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_battery"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_battery"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginStart="15dp"
+                android:src="@drawable/battery"
+                android:tint="@color/electric_bike_icon"
+                app:layout_constraintBottom_toBottomOf="@id/tv_normal_bike"
+                app:layout_constraintStart_toEndOf="@id/tv_normal_bike"
+                app:layout_constraintTop_toTopOf="@id/tv_normal_bike" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_electric_bike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/electric_bike_icon"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:electricBikesCount="@{stationDetailVO.canRentElectricBikes}"
+                app:layout_constraintBottom_toBottomOf="@id/iv_electric_bike"
+                app:layout_constraintStart_toEndOf="@id/iv_electric_bike"
+                app:layout_constraintTop_toTopOf="@id/iv_electric_bike"
+                tools:ignore="SpUsage"
+                tools:text="99" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
+        <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/station_detail_line"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cl_bike_detail" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_bike_return"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="40dp"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line2"
+            app:stationReturnBikeText="@{stationDetailVO}"
+            tools:ignore="SpUsage"
+            tools:text="可歸還：100" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_update_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/black"
+            android:textSize="10dp"
+            app:formatUpdateTime="@{stationDetailVO.updateTime}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_bike_return"
+            tools:ignore="SpUsage"
+            tools:text="資料更新時間：2023-05-12 20:09:36" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_refresh_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/black"
+            android:textSize="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_bike_return"
+            tools:ignore="SpUsage"
+            tools:text="@string/refresh_time" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_block"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/station_detail_block_bg"
+            android:padding="20dp"
+            android:src="@drawable/block"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showBlockImage="@{stationDetailVO}" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/tv_status_light"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:statusLight="@{stationDetailVO.serviceStatus}"
+            tools:src="@drawable/status_normal_circle" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/black"
+            android:textSize="15dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_status_light"
+            app:layout_constraintStart_toEndOf="@id/tv_status_light"
+            app:layout_constraintTop_toTopOf="@id/tv_status_light"
+            app:stationStatusText="@{stationDetailVO.serviceStatus}"
+            tools:ignore="SpUsage"
+            tools:text="正常營運" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_close"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/cancel"
+            app:layout_constraintBottom_toBottomOf="@id/tv_status"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_status" />
+
+    </merge>
 
 </layout>
