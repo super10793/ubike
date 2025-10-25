@@ -16,6 +16,7 @@
     <string name="cancel">取消</string>
     <string name="setting">设置</string>
     <string name="location_permission_hint">允许app使用位置权限，可更快找出附近站点：）</string>
+    <string name="error">错误</string>
     <string name="error00001">token失效，点击确定按钮重新拿取。%s</string>
     <string name="error00002">错误代码：00002\n网路不稳定，确认看看网路是否正常。%s</string>
     <string name="error00003">错误代码：00003\n网路不稳定，确认看看网路是否正常。%s</string>
@@ -40,6 +41,10 @@
     <string name="city_tainan">台南市</string>
     <string name="city_pingtungCounty">屏东县</string>
     <string name="city_kinmenCounty">金门县</string>
+    <string name="city_changhua">彰化县</string>
+    <string name="city_taitung">台东县</string>
+    <string name="city_chiayiCounty">嘉义县</string>
+    <string name="city_yunlinCounty">云林县</string>
     <string name="added_to_favorite">已加入最爱</string>
     <string name="remove_from_favorite">已移除最爱</string>
     <string name="give_full_permission_hint">點擊給予APP完整位置權限</string>

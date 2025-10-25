@@ -18,4 +18,16 @@
     <color name="toast_bg">#70000000</color>
     <color name="bottom_item_n">#9D9D9D</color>
     <color name="bottom_item_h">#FF8000</color>
+    <color name="station_detail_bg">#FFFCEC</color>
+    <color name="dialog_btn_txt">#009FD9</color>
+    <color name="exception_dialog_bg">#96000000</color>
+    <color name="exception_dialog_title_bg">#46A3FF</color>
+    <color name="favorite_bg">#BEBEBE</color>
+    <color name="home_bottom_navigation_bg">#F0F0F0</color>
+    <color name="search_icon">#7B7B7B</color>
+    <color name="favorite_item_can_rent_bg">#6FB7B7</color>
+    <color name="electric_bike_icon">#F75000</color>
+    <color name="marker_main_bg">#5E92F2</color>
+    <color name="station_detail_address_txt">#6C6C6C</color>
+    <color name="station_detail_line">#E0E0E0</color>
 </resources>
