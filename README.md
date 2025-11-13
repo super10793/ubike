@@ -16,6 +16,33 @@
 - ![demo](readme/demo.gif)
 - [Demo影片](https://www.youtube.com/shorts/76vp86woB5U)
 
+### Build Requirements
+- Java版本: 17
+- Gradle版本: 8.7
+- Android Gradle Plugin(AGP)版本: 8.5.2
+- Kotlin版本: 1.9.25
+- 在專案根目錄中添加**secrets.properties**檔案，並添加以下內容(值替換成自己申請的)
+```
+your-project/
+│── app/
+│── secrets.properties      ← create this file
+│── build.gradle
+│── settings.gradle
+```
+
+```
+API_CLIENT_ID_1=YOUR_CLIENT_ID
+API_CLIENT_SECRET_1=YOUR_CLIENT_SECRET
+API_CLIENT_ID_2=YOUR_CLIENT_ID
+API_CLIENT_SECRET_2=YOUR_CLIENT_SECRET
+API_CLIENT_ID_3=YOUR_CLIENT_ID
+API_CLIENT_SECRET_3=YOUR_CLIENT_SECRET
+KEYSTORE_FILE_PATH=YOUR_KEYSTORE_PATH
+KEYSTORE_PASSWORD=YOUR_KEYSTORE_PASSWORD
+KEYSTORE_ALIAS=YOUR_KEYSTORE_ALIAS
+KEYSTORE_ALIAS_PASSWORD=YOUR_KEYSTORE_ALIAS_PASSWORD
+MAPS_API_KEY=YOUR_GOOGLE_MAP_API_KEY
+```
 
 ### Dependencies
 1. Dependency injection
@@ -23,18 +50,14 @@
 2. Network
 	+ [Okhttp3](https://github.com/square/okhttp)
 	+ [Retrofit2](https://github.com/square/retrofit)
-	+ [Rxjava2](https://github.com/ReactiveX/RxJava)
 3. Storage
 	+ [Room](https://developer.android.com/training/data-storage/room?hl=zh-tw)
-	+ [Preference](https://developer.android.com/jetpack/androidx/releases/preference?hl=zh-cn)
 4. Navigation
 	+ [Navigation](https://developer.android.com/jetpack/androidx/releases/navigation?hl=zh-cn)
 5. Firebase
 	+ [Firebase Analytics](https://firebase.google.com/docs/analytics/get-started?hl=zh-cn&platform=android)
 	+ [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics/?hl=zh-cn)
-6. Permissions
-	+ [Easypermissions](https://github.com/googlesamples/easypermissions)
-7. Debug tool
+6. Debug tool
 	+ [Flipper](https://fbflipper.com/)
 
 
@@ -43,3 +66,4 @@
 
 ### 參考資料
 - [運輸資料流通服務平臺(Transport Data eXchange , TDX)](https://tdx.transportdata.tw)
+- [Google Map Api](https://developers.google.com/maps/documentation/android-sdk/get-api-key?hl=zh-tw)
