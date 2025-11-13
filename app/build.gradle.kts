@@ -53,7 +53,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("../keystore/CPKeystore")
+            storeFile = file(secretsProperties["KEYSTORE_FILE_PATH"] as String)
             storePassword = secretsProperties["KEYSTORE_PASSWORD"] as String
             keyAlias = secretsProperties["KEYSTORE_ALIAS"] as String
             keyPassword = secretsProperties["KEYSTORE_ALIAS_PASSWORD"] as String
@@ -117,7 +117,6 @@ dependencies {
     implementation(Libs.ANDROIDX.LIFECYCLE.VIEWMODEL_KTX)
     implementation(Libs.ANDROIDX.NAVIGATION.FRAGMENT_KTX)
     implementation(Libs.ANDROIDX.NAVIGATION.UI_KTX)
-    implementation(Libs.ANDROIDX.PREFERENCE_KTX)
 
     implementation(Libs.GOOGLE.MATERIAL)
     implementation(Libs.GOOGLE.MAP)

@@ -29,8 +29,6 @@ object Version {
 
         const val NAVIGATION = "2.6.0"
 
-        const val PREFERENCE_KTX = "1.2.0"
-
         const val DATASTORE = "1.1.7"
 
         object LIFECYCLE {
@@ -61,15 +59,6 @@ object Version {
         const val RETROFIT2 = "2.9.0"
 
         const val OKHTTP3 = "4.12.0"
-    }
-
-    object REACTIVEX {
-
-        const val RX_JAVA = "2.2.10"
-
-        const val RX_KOTLIN = "2.4.0"
-
-        const val RX_ANDROID = "2.1.0"
     }
 
     object FACEBOOK {

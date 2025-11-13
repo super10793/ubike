@@ -2,9 +2,7 @@ package com.demo.ubike.ui.fragment
 
 import android.app.AlertDialog
 import android.graphics.Color
-import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
@@ -35,8 +33,6 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding>() {
         fun newInstance() = FavoriteFragment()
     }
 
-    override val layoutId: Int = R.layout.fragment_favorite
-
     @Inject
     lateinit var firebaseAnalyticsUtil: FirebaseAnalyticsUtil
 
@@ -44,8 +40,9 @@ class FavoriteFragment : BaseFragment<FragmentFavoriteBinding>() {
     private val viewModel: FavoriteViewModel by viewModels()
     private var adapter: FavoriteAdapter? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun provideLayoutId(): Int = R.layout.fragment_favorite
+
+    override fun initView() {
         initRecyclerView()
     }
 

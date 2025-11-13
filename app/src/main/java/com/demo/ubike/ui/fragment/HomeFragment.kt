@@ -1,7 +1,5 @@
 package com.demo.ubike.ui.fragment
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -13,12 +11,11 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
-
-    override val layoutId: Int = R.layout.fragment_home
     private val viewModel: HomeViewModel by viewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun provideLayoutId(): Int = R.layout.fragment_home
+
+    override fun initView() {
         initViewPager()
         initNavView()
     }

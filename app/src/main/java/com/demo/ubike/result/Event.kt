@@ -3,6 +3,7 @@ package com.demo.ubike.result
 import androidx.lifecycle.Observer
 
 /**
+ * https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.
  */
 open class Event<out T>(private val content: T) {

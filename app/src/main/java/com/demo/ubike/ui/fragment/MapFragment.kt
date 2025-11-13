@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +17,7 @@ import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.widget.RelativeLayout
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.viewModels
@@ -99,13 +96,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(), OnMapReadyCallback, OnMa
     private var userIsMoving = false
     private var lastClickMarker: Marker? = null
     private val locationListener = object : LocationListener {
-        override fun onStatusChanged(
-            provider: String?,
-            status: Int,
-            extras: Bundle?
-        ) {
-            // ignored
-        }
 
         override fun onProviderEnabled(provider: String) {
             // ignored
@@ -119,28 +109,17 @@ class MapFragment : BaseFragment<FragmentMapBinding>(), OnMapReadyCallback, OnMa
             val latLng = LatLng(location.latitude, location.longitude)
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, CAMERA_ZOOM_LEVEL)
             googleMap?.moveCamera(cameraUpdate)
-            googleMap?.isMyLocationEnabled(true)
+            googleMap?.updateMyLocationEnabled(true)
             locationManager?.removeUpdates(this)
         }
     }
 
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.values.all { it }
-        if (allGranted) {
-            moveToCurrentLocation()
-        } else {
-            moveCameraToTaiwan()
-        }
-    }
-
-    override val layoutId: Int = R.layout.fragment_map
     private val homeViewModel: HomeViewModel by viewModels({ requireParentFragment() })
     private val viewModel: MapViewModel by viewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun provideLayoutId(): Int = R.layout.fragment_map
+
+    override fun initView() {
         supportMapFragment =
             childFragmentManager.findFragmentById(R.id.fragment_map) as? SupportMapFragment
         supportMapFragment?.getMapAsync(this)
@@ -152,7 +131,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(), OnMapReadyCallback, OnMa
 
     override fun onResume() {
         super.onResume()
-        googleMap?.isMyLocationEnabled(hasAnyLocationPermissions())
+        googleMap?.updateMyLocationEnabled(hasAnyLocationPermissions())
     }
 
     override fun onPause() {
@@ -250,6 +229,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(), OnMapReadyCallback, OnMa
             googleMap?.moveCamera(cameraUpdate)
         }
     }
+
 
     private fun startAddMarker() {
         while (pendingMarkers.isNotEmpty() && !userIsMoving) {
@@ -384,35 +364,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(), OnMapReadyCallback, OnMa
     }
 
     private fun checkPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-
-        val deniedPermissions = permissions.filter {
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                it
-            ) != PackageManager.PERMISSION_GRANTED
-        }
-
-        if (deniedPermissions.isEmpty()) {
+        if (hasAnyLocationPermissions()) {
             moveToCurrentLocation()
         } else {
-            val shouldShowRationale = deniedPermissions.any {
-                ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), it)
-            }
-            if (shouldShowRationale) {
-                AlertDialog.Builder(requireContext())
-                    .setMessage(getString(R.string.location_permission_hint))
-                    .setPositiveButton(R.string.setting) { _, _ ->
-                        permissionLauncher.launch(deniedPermissions.toTypedArray())
-                    }
-                    .setNegativeButton(R.string.cancel, null)
-                    .show()
-            } else {
-                permissionLauncher.launch(deniedPermissions.toTypedArray())
-            }
+            moveCameraToTaiwan()
         }
     }
 
@@ -433,6 +388,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(), OnMapReadyCallback, OnMa
         } catch (e: SecurityException) {
             e.printStackTrace()
             firebaseAnalyticsUtil.exceptionEvent(e.message ?: SECURITY_ERROR_MESSAGE)
+            moveCameraToTaiwan()
         }
     }
 
@@ -533,7 +489,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(), OnMapReadyCallback, OnMa
     }
 
 
-    private fun GoogleMap.isMyLocationEnabled(enable: Boolean) {
+    private fun GoogleMap.updateMyLocationEnabled(enable: Boolean) {
         try {
             this.isMyLocationEnabled = enable
             changeMapDefaultUi()

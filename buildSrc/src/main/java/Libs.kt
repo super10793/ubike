@@ -10,8 +10,6 @@ object Libs {
 
         const val CONSTRAINTLAYOUT = "androidx.constraintlayout:constraintlayout:${Version.ANDROIDX.CONSTRAINTLAYOUT}"
 
-        const val PREFERENCE_KTX = "androidx.preference:preference-ktx:${Version.ANDROIDX.PREFERENCE_KTX}"
-
         const val DATASTORE = "androidx.datastore:datastore-preferences:${Version.ANDROIDX.DATASTORE}"
 
         object LIFECYCLE {

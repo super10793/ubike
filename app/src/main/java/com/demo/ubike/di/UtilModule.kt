@@ -1,12 +1,9 @@
 package com.demo.ubike.di
 
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
 import com.demo.ubike.utils.FirebaseAnalyticsUtil
 import com.demo.ubike.utils.NetworkUtil
 import com.demo.ubike.utils.SharePreferenceManager
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -19,16 +16,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object UtilModule {
-    @Singleton
-    @Provides
-    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-    }
+
+    private const val PREFERENCE_NAME = "app_preferences"
 
     @Singleton
     @Provides
-    fun provideSharedPreferencesManager(sharedPreferences: SharedPreferences): SharePreferenceManager {
-        return SharePreferenceManager(sharedPreferences)
+    fun provideSharedPreferencesManager(@ApplicationContext context: Context): SharePreferenceManager {
+        val prefs = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+        return SharePreferenceManager(prefs)
     }
 
     @Singleton

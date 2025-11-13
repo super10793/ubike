@@ -1,6 +1,5 @@
 package com.demo.ubike.data.repository
 
-import com.demo.ubike.Config
 import com.demo.ubike.data.api.HomeApi
 import com.demo.ubike.data.local.favorite.FavoriteDao
 import com.demo.ubike.data.local.favorite.FavoriteEntity
@@ -23,6 +22,10 @@ class HomeRepositoryImpl @Inject constructor(
         private const val TOKEN_PREFIX = "Bearer"
 
         private const val STATION_UID = "StationUID"
+
+        private const val VISIBLE_DISTANCE_LAT = 0.02
+
+        private const val VISIBLE_DISTANCE_LON = 0.017
     }
 
     override suspend fun fetchToken(clientId: String, clientSecret: String): Result<TokenResponse> {
@@ -60,10 +63,10 @@ class HomeRepositoryImpl @Inject constructor(
         lat: Double,
         lon: Double
     ): Result<List<StationEntity>> {
-        val maxLat = lat + Config.VISIBLE_DISTANCE_LAT
-        val minLat = lat - Config.VISIBLE_DISTANCE_LAT
-        val maxLon = lon + Config.VISIBLE_DISTANCE_LON
-        val minLon = lon - Config.VISIBLE_DISTANCE_LON
+        val maxLat = lat + VISIBLE_DISTANCE_LAT
+        val minLat = lat - VISIBLE_DISTANCE_LAT
+        val maxLon = lon + VISIBLE_DISTANCE_LON
+        val minLon = lon - VISIBLE_DISTANCE_LON
 
         return try {
             Result.Success(stationDao.getStationsByLocation(maxLat, minLat, maxLon, minLon))
